@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Dərs Cədvəli Pano</title>
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="styles.css?v=20260209c" />
 </head>
 <body>
   <div id="app" class="app">
@@ -57,6 +57,29 @@
     </div>
   </div>
 
+  <div id="after-school-quiz-overlay" class="after-school-quiz-overlay hidden">
+    <div class="after-school-quiz-shell">
+      <div class="after-school-quiz-top">
+        <div id="after-school-quiz-title" class="after-school-quiz-title">After-School Quiz</div>
+        <div id="after-school-quiz-progress" class="after-school-quiz-progress">Question 1 / 20</div>
+      </div>
+      <div class="after-school-quiz-main">
+        <div id="after-school-quiz-phase" class="after-school-quiz-phase">Question Time</div>
+        <div id="after-school-quiz-question" class="after-school-quiz-question">—</div>
+        <img id="after-school-quiz-image" class="after-school-quiz-image hidden" alt="quiz visual" />
+        <div id="after-school-quiz-options" class="after-school-quiz-options"></div>
+        <div id="after-school-quiz-answer" class="after-school-quiz-answer hidden"></div>
+      </div>
+      <div class="after-school-quiz-footer">
+        <div id="after-school-quiz-countdown-label" class="after-school-quiz-countdown-label">Time Left</div>
+        <div class="after-school-quiz-timer">
+          <div id="after-school-quiz-timer-fill" class="after-school-quiz-timer-fill"></div>
+        </div>
+        <div id="after-school-quiz-countdown" class="after-school-quiz-countdown">20s</div>
+      </div>
+    </div>
+  </div>
+
   <div id="error-banner" class="error-banner hidden">Data yüklənmədi — internet/JSON yoxlayın.</div>
 
   <script>
@@ -67,7 +90,7 @@
       const CONFIG = {
         timezone: 'Asia/Baku',
         useTimeZone: true,
-        refreshMs: 10000, // hər 10 saniyə UI yenilə
+        refreshMs: 1000, // hər saniyə UI yenilə (countdown üçün)
         rotationMs: 12000, // 10-15 saniyə aralığı
         breakRotateMs: 15000,
         pinnedTimeoutMs: 60000, // 60 saniyə toxunulmasa avtomatik rotation
@@ -77,6 +100,13 @@
           start: '12:30',
           end: '13:30',
           previewTime: '11:35'
+        },
+        afterSchoolQuiz: {
+          questionSeconds: 20,
+          thinkSeconds: 10,
+          answerSeconds: 6,
+          minQuestions: 20,
+          maxQuestions: 30
         }
       };
 
@@ -95,6 +125,17 @@
         lunchMenu: document.getElementById('lunch-menu'),
         lunchFun: document.getElementById('lunch-fun'),
         lunchCountdown: document.getElementById('lunch-countdown'),
+        afterSchoolQuizOverlay: document.getElementById('after-school-quiz-overlay'),
+        afterSchoolQuizTitle: document.getElementById('after-school-quiz-title'),
+        afterSchoolQuizProgress: document.getElementById('after-school-quiz-progress'),
+        afterSchoolQuizPhase: document.getElementById('after-school-quiz-phase'),
+        afterSchoolQuizQuestion: document.getElementById('after-school-quiz-question'),
+        afterSchoolQuizImage: document.getElementById('after-school-quiz-image'),
+        afterSchoolQuizOptions: document.getElementById('after-school-quiz-options'),
+        afterSchoolQuizAnswer: document.getElementById('after-school-quiz-answer'),
+        afterSchoolQuizCountdownLabel: document.getElementById('after-school-quiz-countdown-label'),
+        afterSchoolQuizTimerFill: document.getElementById('after-school-quiz-timer-fill'),
+        afterSchoolQuizCountdown: document.getElementById('after-school-quiz-countdown'),
         errorBanner: document.getElementById('error-banner')
       };
 
@@ -109,6 +150,11 @@
         rotationIndex: 0,
         pinnedUntil: 0,
         lastDayKey: null,
+        afterSchoolQuiz: {
+          sessionKey: '',
+          startedAt: 0,
+          sequence: []
+        },
         retryTimeout: null
       };
 
@@ -141,6 +187,233 @@
         noyabr: 11,
         dekabr: 12
       };
+
+      const FALLBACK_AFTER_SCHOOL_QUESTIONS = [
+        {
+          icon: '🌿',
+          title: 'Science',
+          question: 'Which gas do plants absorb during photosynthesis?',
+          options: [{ text: 'Oxygen' }, { text: 'Carbon dioxide' }, { text: 'Hydrogen' }, { text: 'Helium' }],
+          answer: 'Correct answer: Carbon dioxide. Plants use CO2, water, and sunlight to make food.'
+        },
+        {
+          icon: '💧',
+          title: 'Science',
+          question: 'At sea level, water boils at what temperature?',
+          options: [{ text: '90 C' }, { text: '100 C' }, { text: '110 C' }, { text: '120 C' }],
+          answer: 'Correct answer: 100 C. Boiling point changes if pressure changes.'
+        },
+        {
+          icon: '🌍',
+          title: 'Earth Science',
+          question: 'Which layer of Earth do we live on?',
+          options: [{ text: 'Outer core' }, { text: 'Mantle' }, { text: 'Crust' }, { text: 'Inner core' }],
+          answer: 'Correct answer: Crust. It is the thin outer solid layer of Earth.'
+        },
+        {
+          icon: '🪐',
+          title: 'Space',
+          question: 'Which planet is called the Red Planet?',
+          options: [{ text: 'Venus' }, { text: 'Mars' }, { text: 'Jupiter' }, { text: 'Mercury' }],
+          answer: 'Correct answer: Mars. Its iron-rich dust gives it a reddish color.'
+        },
+        {
+          icon: '❤️',
+          title: 'Biology',
+          question: 'Which organ pumps blood through the body?',
+          options: [{ text: 'Liver' }, { text: 'Brain' }, { text: 'Heart' }, { text: 'Lung' }],
+          answer: 'Correct answer: Heart. It circulates oxygen and nutrients in blood.'
+        },
+        {
+          icon: '🌊',
+          title: 'Geography',
+          question: 'Which is the largest ocean on Earth?',
+          options: [{ text: 'Atlantic Ocean' }, { text: 'Indian Ocean' }, { text: 'Pacific Ocean' }, { text: 'Arctic Ocean' }],
+          answer: 'Correct answer: Pacific Ocean. It covers more area than all land combined.'
+        },
+        {
+          icon: '🏜️',
+          title: 'Geography',
+          question: 'Which river flows through Egypt and is key to its history?',
+          options: [{ text: 'Amazon' }, { text: 'Nile' }, { text: 'Danube' }, { text: 'Yangtze' }],
+          answer: 'Correct answer: Nile. Ancient Egyptian civilization grew around this river.'
+        },
+        {
+          icon: '🚀',
+          title: 'History',
+          question: 'In what year did humans first land on the Moon?',
+          options: [{ text: '1959' }, { text: '1969' }, { text: '1979' }, { text: '1989' }],
+          answer: 'Correct answer: 1969. Apollo 11 landed with Neil Armstrong and Buzz Aldrin.'
+        },
+        {
+          icon: '🖨️',
+          title: 'History',
+          question: 'Who is most associated with the movable-type printing press in Europe?',
+          options: [{ text: 'Isaac Newton' }, { text: 'Johannes Gutenberg' }, { text: 'Galileo Galilei' }, { text: 'Louis Pasteur' }],
+          answer: 'Correct answer: Johannes Gutenberg. Printing helped spread knowledge quickly.'
+        },
+        {
+          icon: '➗',
+          title: 'Math',
+          question: 'What is 3/4 of 24?',
+          options: [{ text: '16' }, { text: '18' }, { text: '20' }, { text: '22' }],
+          answer: 'Correct answer: 18. First divide 24 by 4, then multiply by 3.'
+        },
+        {
+          icon: '🔢',
+          title: 'Math',
+          question: 'Which number is prime?',
+          options: [{ text: '21' }, { text: '29' }, { text: '35' }, { text: '39' }],
+          answer: 'Correct answer: 29. A prime number has exactly two factors: 1 and itself.'
+        },
+        {
+          icon: '📐',
+          title: 'Math',
+          question: 'What is the area of a rectangle with length 8 and width 5?',
+          options: [{ text: '13' }, { text: '30' }, { text: '40' }, { text: '80' }],
+          answer: 'Correct answer: 40. Area = length x width.'
+        },
+        {
+          icon: '📝',
+          title: 'Language',
+          question: 'Which word is a synonym of "rapid"?',
+          options: [{ text: 'Slow' }, { text: 'Quick' }, { text: 'Silent' }, { text: 'Heavy' }],
+          answer: 'Correct answer: Quick. "Rapid" means fast.'
+        },
+        {
+          icon: '✍️',
+          title: 'Grammar',
+          question: 'Which sentence is punctuated correctly?',
+          options: [{ text: 'where are you going' }, { text: 'Where are you going?' }, { text: 'Where are you going.' }, { text: 'where are you going?' }],
+          answer: 'Correct answer: "Where are you going?" Questions end with a question mark.'
+        },
+        {
+          icon: '💻',
+          title: 'Computing',
+          question: 'Which two digits are used in binary code?',
+          options: [{ text: '0 and 1' }, { text: '1 and 2' }, { text: '2 and 3' }, { text: '0 and 9' }],
+          answer: 'Correct answer: 0 and 1. Computers represent data using binary states.'
+        },
+        {
+          icon: '🌐',
+          title: 'Computing',
+          question: 'What does URL stand for?',
+          options: [{ text: 'Universal Reference Link' }, { text: 'Uniform Resource Locator' }, { text: 'United Routing Language' }, { text: 'User Resource Link' }],
+          answer: 'Correct answer: Uniform Resource Locator. It is the address of a web resource.'
+        },
+        {
+          icon: '♻️',
+          title: 'Environment',
+          question: 'In "Reduce, Reuse, Recycle", which action should come first?',
+          options: [{ text: 'Recycle' }, { text: 'Reduce' }, { text: 'Reuse' }, { text: 'Replace' }],
+          answer: 'Correct answer: Reduce. Preventing waste is better than processing waste later.'
+        },
+        {
+          icon: '🫁',
+          title: 'Biology',
+          question: 'Most mammals breathe using which organ?',
+          options: [{ text: 'Gills' }, { text: 'Lungs' }, { text: 'Skin only' }, { text: 'Fins' }],
+          answer: 'Correct answer: Lungs. Mammals take oxygen from air through their lungs.'
+        },
+        {
+          icon: '🧪',
+          title: 'Chemistry',
+          question: 'What is the chemical symbol for gold?',
+          options: [{ text: 'Ag' }, { text: 'Gd' }, { text: 'Au' }, { text: 'Go' }],
+          answer: 'Correct answer: Au. The symbol comes from the Latin word "aurum".'
+        },
+        {
+          icon: '🧲',
+          title: 'Physics',
+          question: 'What force pulls objects toward Earth?',
+          options: [{ text: 'Friction' }, { text: 'Magnetism' }, { text: 'Gravity' }, { text: 'Pressure' }],
+          answer: 'Correct answer: Gravity. It attracts masses toward each other.'
+        },
+        {
+          icon: '⚡',
+          title: 'Physics',
+          question: 'What is the SI unit of electrical resistance?',
+          options: [{ text: 'Volt' }, { text: 'Ampere' }, { text: 'Ohm' }, { text: 'Watt' }],
+          answer: 'Correct answer: Ohm. Resistance tells how strongly a material opposes current.'
+        },
+        {
+          icon: '🌍',
+          title: 'Geography',
+          question: 'On which continent is the Sahara Desert?',
+          options: [{ text: 'Asia' }, { text: 'Australia' }, { text: 'Africa' }, { text: 'South America' }],
+          answer: 'Correct answer: Africa. The Sahara is one of the largest hot deserts in the world.'
+        },
+        {
+          icon: '🏛️',
+          title: 'Civics',
+          question: 'Which branch of government creates laws?',
+          options: [{ text: 'Legislative' }, { text: 'Executive' }, { text: 'Judicial' }, { text: 'Local media' }],
+          answer: 'Correct answer: Legislative. Law-making is the core function of legislatures.'
+        },
+        {
+          icon: '😁',
+          title: 'Health',
+          question: 'How many teeth does a typical adult have?',
+          options: [{ text: '24' }, { text: '28' }, { text: '32' }, { text: '36' }],
+          answer: 'Correct answer: 32. This usually includes four wisdom teeth.'
+        },
+        {
+          icon: '🎨',
+          title: 'Art',
+          question: 'In painting, which are the primary colors?',
+          options: [{ text: 'Red, yellow, blue' }, { text: 'Red, green, blue' }, { text: 'Orange, green, purple' }, { text: 'Black, white, gray' }],
+          answer: 'Correct answer: Red, yellow, blue. Other colors can be mixed from these.'
+        },
+        {
+          icon: '🎵',
+          title: 'Music',
+          question: 'In music, what does tempo describe?',
+          options: [{ text: 'Volume' }, { text: 'Pitch' }, { text: 'Speed' }, { text: 'Instrument type' }],
+          answer: 'Correct answer: Speed. Tempo tells how fast or slow a piece is played.'
+        },
+        {
+          icon: '📖',
+          title: 'Literature',
+          question: 'What is a metaphor?',
+          options: [{ text: 'A direct comparison without using "like" or "as"' }, { text: 'A list of facts' }, { text: 'A question at the end of a paragraph' }, { text: 'A poem that rhymes every line' }],
+          answer: 'Correct answer: A direct comparison. Example: "Time is a thief."'
+        },
+        {
+          icon: '📏',
+          title: 'Geometry',
+          question: 'What is the sum of interior angles in a triangle?',
+          options: [{ text: '90 degrees' }, { text: '120 degrees' }, { text: '180 degrees' }, { text: '360 degrees' }],
+          answer: 'Correct answer: 180 degrees. This is true for every triangle in Euclidean geometry.'
+        },
+        {
+          icon: '☀️',
+          title: 'Health Science',
+          question: 'Which vitamin is produced in skin with sunlight exposure?',
+          options: [{ text: 'Vitamin A' }, { text: 'Vitamin C' }, { text: 'Vitamin D' }, { text: 'Vitamin K' }],
+          answer: 'Correct answer: Vitamin D. It helps the body absorb calcium for bone health.'
+        },
+        {
+          icon: '🪐',
+          title: 'Space',
+          question: 'Which is the largest planet in our solar system?',
+          options: [{ text: 'Earth' }, { text: 'Saturn' }, { text: 'Jupiter' }, { text: 'Neptune' }],
+          answer: 'Correct answer: Jupiter. It is a gas giant with a famous Great Red Spot.'
+        },
+        {
+          icon: '🗾',
+          title: 'Geography',
+          question: 'What is the capital city of Japan?',
+          options: [{ text: 'Kyoto' }, { text: 'Osaka' }, { text: 'Tokyo' }, { text: 'Nagoya' }],
+          answer: 'Correct answer: Tokyo. It is one of the most populated metropolitan areas in the world.'
+        },
+        {
+          icon: '🖥️',
+          title: 'Computing',
+          question: 'What does CPU stand for?',
+          options: [{ text: 'Central Processing Unit' }, { text: 'Computer Power Utility' }, { text: 'Core Program Unit' }, { text: 'Central Program Utility' }],
+          answer: 'Correct answer: Central Processing Unit. It executes instructions in a computer.'
+        }
+      ];
 
       function pad2(num) {
         return String(num).padStart(2, '0');
@@ -750,6 +1023,9 @@
           state.schedule = normalizeSchedule(scheduleRaw);
           state.lunch = normalizeLunch(lunchRaw);
           state.breakContent = normalizeBreakContent(breakRaw);
+          state.afterSchoolQuiz.sessionKey = '';
+          state.afterSchoolQuiz.startedAt = 0;
+          state.afterSchoolQuiz.sequence = [];
           if (state.breakContent && state.breakContent.rotationSeconds) {
             CONFIG.breakRotateMs = state.breakContent.rotationSeconds * 1000;
           }
@@ -983,6 +1259,220 @@
         return `${row('AZ', az)}${row('TR', tr)}${row('EN', en)}`;
       }
 
+      function getPrimaryLangText(value, fallback = '—') {
+        const lang = normalizeLangText(value || '');
+        return safeText(lang.en || lang.az || lang.tr, fallback);
+      }
+
+      function isSchoolWeekday(dayKey) {
+        return dayKey === 'Mon' || dayKey === 'Tue' || dayKey === 'Wed' || dayKey === 'Thu' || dayKey === 'Fri';
+      }
+
+      function isAfterSchoolQuestionItem(item) {
+        if (!item) return false;
+        const question = getPrimaryLangText(item.question, '');
+        const answer = getPrimaryLangText(item.answer, '');
+        return Boolean(question && answer);
+      }
+
+      function getAfterSchoolQuestionPool() {
+        const curatedPool = FALLBACK_AFTER_SCHOOL_QUESTIONS
+          .map(item => normalizeBreakItem(item, 'quiz'))
+          .filter(isAfterSchoolQuestionItem);
+
+        const sourceItems = state.breakContent && Array.isArray(state.breakContent.items)
+          ? state.breakContent.items
+          : [];
+        const livePool = sourceItems.filter(item => {
+          if (!isAfterSchoolQuestionItem(item)) return false;
+          const type = safeText(item.type, '').toLowerCase();
+          if (type && type !== 'quiz' && type !== 'true_false') return false;
+          const questionLang = normalizeLangText(item.question || '');
+          const answerLang = normalizeLangText(item.answer || '');
+          return Boolean(safeText(questionLang.en, '') && safeText(answerLang.en, ''));
+        });
+        const seen = new Set();
+        const combined = [];
+
+        curatedPool.concat(livePool).forEach(item => {
+          const key = getPrimaryLangText(item.question, '').toLowerCase();
+          if (!key || seen.has(key)) return;
+          seen.add(key);
+          combined.push(item);
+        });
+
+        return combined;
+      }
+
+      function shuffleCopy(list) {
+        const arr = list.slice();
+        for (let i = arr.length - 1; i > 0; i -= 1) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return arr;
+      }
+
+      function getAfterSchoolQuestionCount(sessionKey) {
+        const minQuestions = Math.max(1, Number(CONFIG.afterSchoolQuiz.minQuestions) || 20);
+        const maxQuestions = Math.max(minQuestions, Number(CONFIG.afterSchoolQuiz.maxQuestions) || minQuestions);
+        const range = maxQuestions - minQuestions + 1;
+        let hash = 0;
+        for (let i = 0; i < sessionKey.length; i += 1) {
+          hash = ((hash * 31) + sessionKey.charCodeAt(i)) >>> 0;
+        }
+        return minQuestions + (hash % range);
+      }
+
+      function buildAfterSchoolQuizSequence(pool, questionCount) {
+        const safePool = (pool || []).filter(isAfterSchoolQuestionItem);
+        if (!safePool.length) return [];
+        const targetCount = Math.max(1, Number(questionCount) || 20);
+        const sequence = [];
+
+        while (sequence.length < targetCount) {
+          const round = shuffleCopy(safePool);
+          for (let i = 0; i < round.length && sequence.length < targetCount; i += 1) {
+            sequence.push(round[i]);
+          }
+        }
+
+        return sequence;
+      }
+
+      function ensureAfterSchoolQuizSession(context) {
+        const sessionKey = `${context.now.year}-${pad2(context.now.month)}-${pad2(context.now.day)}`;
+        const quizState = state.afterSchoolQuiz;
+        if (quizState.sessionKey === sessionKey && quizState.sequence.length) return;
+
+        const pool = getAfterSchoolQuestionPool();
+        const questionCount = getAfterSchoolQuestionCount(sessionKey);
+        quizState.sequence = buildAfterSchoolQuizSequence(pool, questionCount);
+        quizState.sessionKey = sessionKey;
+        quizState.startedAt = Date.now();
+      }
+
+      function getAfterSchoolQuizFrame(context) {
+        ensureAfterSchoolQuizSession(context);
+
+        const quizState = state.afterSchoolQuiz;
+        if (!quizState.sequence.length) return null;
+
+        const questionMs = Math.max(5, Number(CONFIG.afterSchoolQuiz.questionSeconds) || 20) * 1000;
+        const thinkMs = Math.max(3, Number(CONFIG.afterSchoolQuiz.thinkSeconds) || 10) * 1000;
+        const answerMs = Math.max(3, Number(CONFIG.afterSchoolQuiz.answerSeconds) || 6) * 1000;
+        const totalMs = questionMs + thinkMs + answerMs;
+        const elapsedMs = Math.max(0, Date.now() - quizState.startedAt);
+        const cycleIndex = Math.floor(elapsedMs / totalMs);
+        const cycleOffset = elapsedMs % totalMs;
+        const questionIndex = cycleIndex % quizState.sequence.length;
+
+        let phase = 'question';
+        let phaseDurationMs = questionMs;
+        let phaseOffsetMs = cycleOffset;
+
+        if (cycleOffset >= questionMs && cycleOffset < questionMs + thinkMs) {
+          phase = 'think';
+          phaseDurationMs = thinkMs;
+          phaseOffsetMs = cycleOffset - questionMs;
+        } else if (cycleOffset >= questionMs + thinkMs) {
+          phase = 'answer';
+          phaseDurationMs = answerMs;
+          phaseOffsetMs = cycleOffset - questionMs - thinkMs;
+        }
+
+        const phaseSecondsLeft = Math.max(1, Math.ceil((phaseDurationMs - phaseOffsetMs) / 1000));
+
+        return {
+          item: quizState.sequence[questionIndex],
+          questionIndex,
+          totalQuestions: quizState.sequence.length,
+          phase,
+          phaseSecondsLeft,
+          phaseDurationSeconds: Math.max(1, Math.round(phaseDurationMs / 1000))
+        };
+      }
+
+      function renderAfterSchoolQuizOverlay(context) {
+        const isAfterSchoolWeekday = isSchoolWeekday(context.dayKey) && context.isAfterSchool;
+        if (!isAfterSchoolWeekday) {
+          dom.afterSchoolQuizOverlay.classList.add('hidden');
+          return;
+        }
+
+        dom.afterSchoolQuizOverlay.classList.remove('hidden');
+        const frame = getAfterSchoolQuizFrame(context);
+        if (!frame || !frame.item) {
+          dom.afterSchoolQuizTitle.textContent = 'After-School Quiz';
+          dom.afterSchoolQuizProgress.textContent = 'No questions found';
+          dom.afterSchoolQuizPhase.textContent = 'Data missing';
+          dom.afterSchoolQuizQuestion.textContent = 'Add question items to data/break-content.json.';
+          dom.afterSchoolQuizImage.classList.add('hidden');
+          dom.afterSchoolQuizOptions.innerHTML = '';
+          dom.afterSchoolQuizAnswer.classList.add('hidden');
+          dom.afterSchoolQuizCountdownLabel.textContent = 'Time Left';
+          dom.afterSchoolQuizCountdown.textContent = '0s';
+          dom.afterSchoolQuizTimerFill.style.width = '0%';
+          return;
+        }
+
+        const item = frame.item;
+        const phaseInfo = {
+          question: { heading: 'Question Time', countdownLabel: 'Time Left' },
+          think: { heading: 'Think Time', countdownLabel: 'Think For' },
+          answer: { heading: 'Correct Answer', countdownLabel: 'Next Question' }
+        }[frame.phase];
+
+        const itemTitle = getPrimaryLangText(item.title, 'After-School Quiz');
+        const iconPrefix = item.icon ? `${item.icon} ` : '';
+        dom.afterSchoolQuizTitle.textContent = `${iconPrefix}${itemTitle}`;
+        dom.afterSchoolQuizProgress.textContent = `Question ${frame.questionIndex + 1} / ${frame.totalQuestions}`;
+        dom.afterSchoolQuizPhase.textContent = phaseInfo.heading;
+        dom.afterSchoolQuizQuestion.textContent = getPrimaryLangText(item.question, 'Question is unavailable');
+        dom.afterSchoolQuizCountdownLabel.textContent = phaseInfo.countdownLabel;
+        dom.afterSchoolQuizCountdown.textContent = `${frame.phaseSecondsLeft}s`;
+
+        const width = Math.max(0, Math.min(100, (frame.phaseSecondsLeft / frame.phaseDurationSeconds) * 100));
+        dom.afterSchoolQuizTimerFill.style.width = `${width}%`;
+
+        const image = safeText(item.image, '');
+        if (image) {
+          dom.afterSchoolQuizImage.src = image;
+          dom.afterSchoolQuizImage.classList.remove('hidden');
+        } else {
+          dom.afterSchoolQuizImage.classList.add('hidden');
+        }
+
+        dom.afterSchoolQuizOptions.innerHTML = '';
+        if (Array.isArray(item.options) && item.options.length) {
+          item.options.forEach((option, index) => {
+            const row = document.createElement('div');
+            row.className = 'after-school-quiz-option';
+
+            const marker = document.createElement('span');
+            marker.className = 'after-school-quiz-option-marker';
+            marker.textContent = safeText(option.icon, String.fromCharCode(65 + (index % 26)));
+
+            const text = document.createElement('span');
+            text.className = 'after-school-quiz-option-text';
+            text.textContent = getPrimaryLangText(option.text, `Option ${index + 1}`);
+
+            row.appendChild(marker);
+            row.appendChild(text);
+            dom.afterSchoolQuizOptions.appendChild(row);
+          });
+        } else {
+          const single = document.createElement('div');
+          single.className = 'after-school-quiz-option solo';
+          single.textContent = 'Think about your answer and wait for the reveal.';
+          dom.afterSchoolQuizOptions.appendChild(single);
+        }
+
+        const answerText = getPrimaryLangText(item.answer, 'Answer is unavailable');
+        dom.afterSchoolQuizAnswer.textContent = answerText;
+        dom.afterSchoolQuizAnswer.classList.toggle('hidden', frame.phase !== 'answer');
+      }
+
       function renderBreakOptions(item) {
         if (!item.options || !item.options.length) return '';
         const options = item.options.map(option => `
@@ -1151,7 +1641,8 @@
         if (context.isAfterSchool) {
           const nextPreview = getTomorrowPreview(classId, dayKey);
           dom.mainContent.innerHTML = `
-            <div class="state">Dərslər bitdi</div>
+            <div class="state">Dərslər bitdi • Quiz aktivdir</div>
+            <div class="preview">Tam ekranda 20-30 suallıq avtomatik quiz davam edir.</div>
             ${nextPreview}
           `;
           return;
@@ -1315,6 +1806,7 @@
         renderMainPanel(context);
         renderClassList(context);
         renderLunchOverlay(context);
+        renderAfterSchoolQuizOverlay(context);
         scrollSelectedIntoView();
       }
 
