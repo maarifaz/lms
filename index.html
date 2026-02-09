@@ -689,6 +689,11 @@
         dom.classList.innerHTML = '';
         state.classEls.clear();
 
+        if (!state.classes.length) {
+          dom.classList.innerHTML = '<div class="menu-empty">Sinif məlumatı tapılmadı</div>';
+          return;
+        }
+
         state.classes.forEach(classId => {
           const item = document.createElement('button');
           item.type = 'button';
