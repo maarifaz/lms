@@ -299,32 +299,35 @@
 
       function buildDefaultPeriods(maxPeriod) {
         const templates = [
-          ['08:30', '09:10'],
-          ['09:20', '10:00'],
-          ['10:10', '10:50'],
-          ['11:00', '11:35'],
-          ['11:45', '12:25'],
-          ['13:30', '14:10'],
-          ['14:20', '15:00'],
-          ['15:10', '15:50']
+          { start: '08:30', end: '09:10' },
+          { start: '09:30', end: '10:10' },
+          { start: '10:30', end: '11:00' },
+          { start: '11:05', end: '11:35' },
+          { start: '11:50', end: '12:30' },
+          { start: '13:30', end: '14:00' },
+          { start: '14:05', end: '14:35' },
+          { start: '14:55', end: '15:30' },
+          { start: '15:30', end: '15:45', label: 'Okuma saati' },
+          { start: '15:45', end: '15:50', label: 'Temizlik saati' }
         ];
 
         const periods = [];
-        const count = Math.max(1, Number(maxPeriod) || 8);
+        const count = Math.max(1, Number(maxPeriod) || 10);
         for (let i = 0; i < count; i += 1) {
           if (templates[i]) {
-            periods.push({ id: i + 1, start: templates[i][0], end: templates[i][1] });
+            periods.push({ id: i + 1, start: templates[i].start, end: templates[i].end, label: templates[i].label || '' });
             continue;
           }
 
-          // 8-ci perioddan sonra avtomatik 40 dəqiqə dərs + 10 dəqiqə fasilə
+          // Şablondan artıq periodlar üçün avtomatik 40 dəqiqə dərs + 10 dəqiqə fasilə
           const prev = periods[periods.length - 1];
           const nextStartMin = timeToMinutes(prev.end) + 10;
           const nextEndMin = nextStartMin + 40;
           periods.push({
             id: i + 1,
             start: minutesToTime(nextStartMin),
-            end: minutesToTime(nextEndMin)
+            end: minutesToTime(nextEndMin),
+            label: ''
           });
         }
 
@@ -349,6 +352,7 @@
             id: Number(id),
             start,
             end,
+            label: p.label || '',
             startMin,
             endMin
           };
@@ -812,12 +816,30 @@
         if (!state.selectedClassId) return;
         if (state.selectedClassId === state.lastSelectedClassId) return;
 
+        const container = dom.classList;
         const el = state.classEls.get(state.selectedClassId);
-        if (el && typeof el.scrollIntoView === 'function') {
-          el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        if (el && container) {
+          const elementTop = el.offsetTop;
+          const elementBottom = elementTop + el.offsetHeight;
+          const viewTop = container.scrollTop;
+          const viewBottom = viewTop + container.clientHeight;
+
+          if (elementTop < viewTop || elementBottom > viewBottom) {
+            const targetTop = elementTop - Math.max(0, (container.clientHeight - el.offsetHeight) / 2);
+            container.scrollTo({
+              top: Math.max(0, targetTop),
+              behavior: 'smooth'
+            });
+          }
         }
 
         state.lastSelectedClassId = state.selectedClassId;
+      }
+
+      function formatPeriodText(period) {
+        if (!period) return '—';
+        if (period.label) return `${period.start}-${period.end} (${period.label})`;
+        return `${period.start}-${period.end} (${period.id}-ci dərs)`;
       }
 
       function renderHeader(context) {
@@ -836,7 +858,9 @@
         } else if (context.isBreak) {
           statusText = 'Hazırda: Tənəffüs';
         } else if (context.currentPeriod) {
-          statusText = `Hazırda: ${context.currentPeriod.id}-ci dərs`;
+          statusText = context.currentPeriod.label
+            ? `Hazırda: ${context.currentPeriod.label}`
+            : `Hazırda: ${context.currentPeriod.id}-ci dərs`;
         }
 
         dom.status.textContent = statusText;
@@ -927,7 +951,7 @@
             ${warning}
             ${buildInfoRow('Növbəti dərs', safeText(nextLesson ? nextLesson.subject : null))}
             ${buildInfoRow('Müəllim', safeText(nextLesson ? nextLesson.teacher : null))}
-            ${buildInfoRow('Saat', nextPeriod ? `${nextPeriod.start}-${nextPeriod.end} (${nextPeriod.id}-ci dərs)` : '—')}
+            ${buildInfoRow('Saat', nextPeriod ? formatPeriodText(nextPeriod) : '—')}
             ${minutesToNext !== null ? buildInfoRow('Qalıb', `${minutesToNext} dəqiqə`) : ''}
             ${previewLunch}
           `;
@@ -942,11 +966,11 @@
           dom.mainContent.innerHTML = `
             ${buildInfoRow('Hazırda', safeText(currentLesson ? currentLesson.subject : null))}
             ${buildInfoRow('Müəllim', safeText(currentLesson ? currentLesson.teacher : null))}
-            ${buildInfoRow('Saat', `${context.currentPeriod.start}-${context.currentPeriod.end} (${context.currentPeriod.id}-ci dərs)`) }
+            ${buildInfoRow('Saat', formatPeriodText(context.currentPeriod)) }
             <div class="divider"></div>
             ${buildInfoRow('Növbəti', safeText(nextLesson ? nextLesson.subject : null))}
             ${buildInfoRow('Müəllim', safeText(nextLesson ? nextLesson.teacher : null))}
-            ${buildInfoRow('Saat', nextPeriod ? `${nextPeriod.start}-${nextPeriod.end} (${nextPeriod.id}-ci dərs)` : '—')}
+            ${buildInfoRow('Saat', nextPeriod ? formatPeriodText(nextPeriod) : '—')}
           `;
           return;
         }

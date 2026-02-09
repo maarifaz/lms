@@ -1,38 +1,211 @@
-﻿{
-  "school_name": "Azərbaycan Beynəlxalq Maarif Məktəbləri – Nərimanov kampusu",
+{
+  "school_name": "Azərbaycan Beynəlxalq Maarif Məktəbləri - Nərimanov kampusu",
+  "period": "Fevral 2026",
   "lunch_start": "12:30",
   "lunch_end": "13:30",
   "preview_time": "11:35",
-  "menu": {
-    "2026-02-09": {
-      "items": [
-        "Şorba: Düyülü toyuq şorbası",
-        "Əsas yemək: Mantı, qatıq",
-        "Qarnir: Sadə plov",
-        "Salat: Kələm turşusu",
-        "Desert: Meyvə",
-        "İçki: Kompot"
-      ]
-    },
-    "2026-02-10": {
-      "items": [
-        "Şorba: Borş",
-        "Əsas yemək: Qızardılmış toyuq filesi",
-        "Qarnir: Ev sayağı kartof qızartması",
-        "Salat: Çuğundurlu kök salatı",
-        "Desert: İslak kek",
-        "İçki: Kompot"
-      ]
-    },
-    "Mon": {
-      "items": [
-        "Şorba: Pomidor şorbası",
-        "Əsas yemək: Sobada toyuq tikələri",
-        "Qarnir: Əriştəli plov",
-        "Salat: Çuğundur salatı",
-        "Desert: Meyvə",
-        "İçki: Ayran"
-      ]
-    }
+  "menus": {
+    "lunch_menu": [
+      {
+        "date": "2 fevral-Bazar ertəsi",
+        "nutrition": "Kcal 580, Yag 22g, zulal 36g, KH 58g",
+        "soup": "Duyu sorbasi",
+        "main_course": "Toyuq cop sis kababi",
+        "garnish": "Qarabasaq",
+        "salad": "Cugundur salati",
+        "dessert": "Meyve",
+        "drink": "Ayran"
+      },
+      {
+        "date": "3 fevral-Cersenbe axsami",
+        "nutrition": "Kcal 760, Yag 30g, zulal 33g, KH 86g",
+        "soup": "Dusbere",
+        "main_course": "Mal eti kotleti",
+        "garnish": "Sade Plov",
+        "salad": "Mimoza salati",
+        "dessert": "Sulu borek",
+        "drink": "Kompot"
+      },
+      {
+        "date": "4 fevral-Cersenbe",
+        "nutrition": "Kcal 650, Yag 24g, zulal 30g, KH 78g",
+        "soup": "Pomidor sorbasi",
+        "main_course": "Toyuq qizartmasi",
+        "garnish": "Makaron",
+        "salad": "Xirt-xirtli badimcan salati",
+        "dessert": "Meyve",
+        "drink": "Ayran"
+      },
+      {
+        "date": "5 fevral-Cume axsami",
+        "nutrition": "Kcal 820, Yag 36g, zulal 35g, KH 88g",
+        "soup": "Mercimek sorbasi",
+        "main_course": "Dana etli terevezli qovurma",
+        "garnish": "Kartof pure",
+        "salad": "Sezar salati",
+        "dessert": "Puding",
+        "drink": "Kompot"
+      },
+      {
+        "date": "6 fevral-Cume",
+        "nutrition": "Kcal 620, Yag 22g, zulal 28g, KH 72g",
+        "soup": "Eristeli lobyali sorba",
+        "main_course": "Naqqets",
+        "garnish": "Qovrulmus xirda vermisel",
+        "salad": "Almali cugundur salati",
+        "dessert": "Meyve",
+        "drink": "Ayran"
+      },
+      {
+        "date": "9 fevral-Bazar ertesi",
+        "nutrition": "Kcal 610, Yag 21g, zulal 34g, KH 70g",
+        "soup": "Duyulu toyuq sorbasi",
+        "main_course": "Manti, qatiq",
+        "garnish": "Sade plov",
+        "salad": "Kelem tursusu",
+        "dessert": "Meyve",
+        "drink": "Kompot"
+      },
+      {
+        "date": "10 fevral-Cersenbe axsami",
+        "nutrition": "Kcal 880, Yag 38g, zulal 32g, KH 95g",
+        "soup": "Bors",
+        "main_course": "Qizardilmis toyuq filesi",
+        "garnish": "Ev sayagi kartof qizartmasi",
+        "salad": "Cugundurlu kok salati",
+        "dessert": "Islak kek",
+        "drink": "Kompot"
+      },
+      {
+        "date": "11 fevral-Cersenbe",
+        "nutrition": "Kcal 640, Yag 20g, zulal 29g, KH 78g",
+        "soup": "Merci sorbasi",
+        "main_course": "Toyuq etli burger",
+        "garnish": "Kartof qizartmasi",
+        "salad": "Sezar salati",
+        "dessert": "Meyve",
+        "drink": "Ayran"
+      },
+      {
+        "date": "12 fevral-Cume axsami",
+        "nutrition": "Kcal 570, Yag 18g, zulal 27g, KH 68g",
+        "soup": "Dovga",
+        "main_course": "Dana etli qovurma",
+        "garnish": "Eriste",
+        "salad": "Biberli toyuq salati",
+        "dessert": "Sulu borek",
+        "drink": "Kompot"
+      },
+      {
+        "date": "13 fevral-Cume",
+        "nutrition": "Kcal 740, Yag 28g, zulal 31g, KH 82g",
+        "soup": "Vermisel sorbasi",
+        "main_course": "Toyuq kotleti",
+        "garnish": "Spagetti",
+        "salad": "Paytaxt salati",
+        "dessert": "Meyve",
+        "drink": "Ayran"
+      },
+      {
+        "date": "16 fevral-Bazar ertesi",
+        "nutrition": "Kcal 600, Yag 21g, zulal 34g, KH 64g",
+        "soup": "Pomidor sorbasi",
+        "main_course": "Sobada toyuq tikeleri",
+        "garnish": "Eristeli plov",
+        "salad": "Cugundur salati",
+        "dessert": "Meyve",
+        "drink": "Ayran"
+      },
+      {
+        "date": "17 fevral-Cersenbe axsami",
+        "nutrition": "Kcal 810, Yag 34g, zulal 32g, KH 90g",
+        "soup": "Duyu sorbasi",
+        "main_course": "Kozde dana eti kotleti",
+        "garnish": "Ev sayagi kartof qizartmasi",
+        "salad": "Kelem tursusu",
+        "dessert": "Islak kek",
+        "drink": "Kompot"
+      },
+      {
+        "date": "18 fevral-Cersenbe",
+        "nutrition": "Kcal 650, Yag 23g, zulal 33g, KH 76g",
+        "soup": "Dusbere",
+        "main_course": "Souslu dana etli kotlet",
+        "garnish": "Makaron",
+        "salad": "Biberli toyuq salati",
+        "dessert": "Meyve",
+        "drink": "Kompot"
+      },
+      {
+        "date": "19 fevral-Cume axsami",
+        "nutrition": "Kcal 830, Yag 30g, zulal 34g, KH 92g",
+        "soup": "Lobya sorbasi",
+        "main_course": "Toyuq cop sis kabab",
+        "garnish": "Fettuccine qaymaqli sousda eriste",
+        "salad": "Vitaminli salat (Qarisiq terevez)",
+        "dessert": "Pudinq",
+        "drink": "Ayran"
+      },
+      {
+        "date": "20 fevral-Cume",
+        "nutrition": "Kcal 610, Yag 22g, zulal 30g, KH 70g",
+        "soup": "Mercimek sorbasi",
+        "main_course": "Dana etli terevezli qovurma",
+        "garnish": "Qarabasaq",
+        "salad": "Sezar salati",
+        "dessert": "Meyve",
+        "drink": "Kompot"
+      },
+      {
+        "date": "23 fevral-Bazar ertesi",
+        "nutrition": "Kcal 860, Yag 34g, zulal 32g, KH 94g",
+        "soup": "Bors",
+        "main_course": "Toyuq qizartma",
+        "garnish": "Makaron",
+        "salad": "Kelem tursusu",
+        "dessert": "Meyve",
+        "drink": "Ayran"
+      },
+      {
+        "date": "24 fevral-Cersenbe axsami",
+        "nutrition": "Kcal 590, Yag 20g, zulal 31g, KH 66g",
+        "soup": "Yayla sorbasi",
+        "main_course": "Dana etli qovurma",
+        "garnish": "Sade plov",
+        "salad": "Anadolu salati",
+        "dessert": "Sulu borek",
+        "drink": "Kompot"
+      },
+      {
+        "date": "25 fevral-Cersenbe",
+        "nutrition": "Kcal 610, Yag 21g, zulal 29g, KH 72g",
+        "soup": "Pomidor sorbasi",
+        "main_course": "Dana etli burger",
+        "garnish": "Ev sayagi kartof qizartmasi",
+        "salad": "Kelem salati",
+        "dessert": "Meyve",
+        "drink": "Ayran"
+      },
+      {
+        "date": "26 fevral-Cume axsami",
+        "nutrition": "Kcal 920, Yag 40g, zulal 34g, KH 102g",
+        "soup": "Dusbere",
+        "main_course": "Naqqets",
+        "garnish": "Qovrulmus vermisel",
+        "salad": "Mimoza salati",
+        "dessert": "Meyve",
+        "drink": "Kompot"
+      },
+      {
+        "date": "27 fevral-Cume",
+        "nutrition": "",
+        "soup": "Mercimek sorbasi",
+        "main_course": "Kelem dolmasi",
+        "garnish": "Qatiq",
+        "salad": "Pendirli zeytunlu salat",
+        "dessert": "Puding",
+        "drink": "Kompot"
+      }
+    ]
   }
 }
