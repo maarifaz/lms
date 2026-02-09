@@ -52,6 +52,7 @@
       <div class="lunch-title">NAHAR / LUNCH</div>
       <div id="lunch-date" class="lunch-date">—</div>
       <div id="lunch-menu" class="lunch-menu"></div>
+      <div id="lunch-fun" class="lunch-fun"></div>
       <div id="lunch-countdown" class="lunch-countdown"></div>
     </div>
   </div>
@@ -68,6 +69,7 @@
         useTimeZone: true,
         refreshMs: 10000, // hər 10 saniyə UI yenilə
         rotationMs: 12000, // 10-15 saniyə aralığı
+        breakRotateMs: 15000,
         pinnedTimeoutMs: 60000, // 60 saniyə toxunulmasa avtomatik rotation
         dataRefreshMs: 5 * 60 * 1000, // 5 dəqiqə
         dataRetryMs: 30000,
@@ -91,6 +93,7 @@
         lunchOverlay: document.getElementById('lunch-overlay'),
         lunchDate: document.getElementById('lunch-date'),
         lunchMenu: document.getElementById('lunch-menu'),
+        lunchFun: document.getElementById('lunch-fun'),
         lunchCountdown: document.getElementById('lunch-countdown'),
         errorBanner: document.getElementById('error-banner')
       };
@@ -98,6 +101,7 @@
       const state = {
         schedule: null,
         lunch: null,
+        breakContent: null,
         classes: [],
         classEls: new Map(),
         selectedClassId: null,
@@ -641,6 +645,94 @@
         return out;
       }
 
+      function normalizeLangText(value) {
+        if (!value) return { az: '', tr: '', en: '' };
+        if (typeof value === 'string') {
+          return { az: value, tr: value, en: value };
+        }
+
+        return {
+          az: safeText(value.az || value.aze || value.azerbaijani || '', ''),
+          tr: safeText(value.tr || value.turkish || '', ''),
+          en: safeText(value.en || value.english || '', '')
+        };
+      }
+
+      function normalizeBreakItem(item, fallbackType) {
+        const optionsRaw = Array.isArray(item.options) ? item.options : [];
+        const options = optionsRaw.map(option => ({
+          text: normalizeLangText(option.text || option.label || option),
+          icon: safeText(option.icon || '', ''),
+          image: safeText(option.image || option.image_url || '', '')
+        }));
+
+        return {
+          type: safeText(item.type || fallbackType || 'fact', 'fact'),
+          shownIn: safeText(item.shown_in || 'both', 'both'),
+          icon: safeText(item.icon || '', ''),
+          title: normalizeLangText(item.title || ''),
+          question: normalizeLangText(item.question || ''),
+          answer: normalizeLangText(item.answer || ''),
+          hint: normalizeLangText(item.hint || ''),
+          prompt: normalizeLangText(item.prompt || ''),
+          text: normalizeLangText(item.text || item.fact || ''),
+          image: safeText(item.image || item.image_url || '', ''),
+          options
+        };
+      }
+
+      function normalizeBookItem(item) {
+        return {
+          title: safeText(item.title || item.name || '', ''),
+          author: safeText(item.author || '', ''),
+          ageMin: Number(item.age_min || item.ageMin || 7),
+          ageMax: Number(item.age_max || item.ageMax || 16),
+          icon: safeText(item.icon || '📘', '📘'),
+          cover: safeText(item.cover || item.image || item.image_url || '', ''),
+          note: normalizeLangText(item.note || item.desc || '')
+        };
+      }
+
+      function normalizeBreakContent(raw) {
+        const out = {
+          rotationSeconds: Math.floor(CONFIG.breakRotateMs / 1000),
+          items: [],
+          books: []
+        };
+        if (!raw || typeof raw !== 'object') return out;
+
+        const parsedRotation = Number(raw.rotation_seconds || raw.rotationSeconds);
+        if (!Number.isNaN(parsedRotation) && parsedRotation >= 8) {
+          out.rotationSeconds = parsedRotation;
+        }
+
+        const allItems = [];
+        if (Array.isArray(raw.items)) {
+          raw.items.forEach(item => allItems.push(normalizeBreakItem(item, item.type)));
+        }
+
+        const sections = [
+          ['quizzes', 'quiz'],
+          ['true_false', 'true_false'],
+          ['riddles', 'riddle'],
+          ['activities', 'activity'],
+          ['facts', 'fact']
+        ];
+        sections.forEach(([key, type]) => {
+          if (!Array.isArray(raw[key])) return;
+          raw[key].forEach(item => allItems.push(normalizeBreakItem(item, type)));
+        });
+
+        out.items = allItems.filter(item => {
+          if (!item) return false;
+          return item.question.az || item.text.az || item.prompt.az || item.title.az || item.question.en || item.text.en;
+        });
+
+        const booksRaw = Array.isArray(raw.books) ? raw.books : [];
+        out.books = booksRaw.map(normalizeBookItem).filter(book => book.title);
+        return out;
+      }
+
       async function fetchJson(path) {
         const res = await fetch(path, { cache: 'no-store' });
         if (!res.ok) throw new Error(`Fetch failed: ${path}`);
@@ -649,13 +741,18 @@
 
       async function loadData() {
         try {
-          const [scheduleRaw, lunchRaw] = await Promise.all([
+          const [scheduleRaw, lunchRaw, breakRaw] = await Promise.all([
             fetchJson('data/schedule.json'),
-            fetchJson('data/lunch.json')
+            fetchJson('data/lunch.json'),
+            fetchJson('data/break-content.json').catch(() => null)
           ]);
 
           state.schedule = normalizeSchedule(scheduleRaw);
           state.lunch = normalizeLunch(lunchRaw);
+          state.breakContent = normalizeBreakContent(breakRaw);
+          if (state.breakContent && state.breakContent.rotationSeconds) {
+            CONFIG.breakRotateMs = state.breakContent.rotationSeconds * 1000;
+          }
 
           // Schedule-dan timezone varsa, onu prioritet edirik
           if (state.schedule.timezone) {
@@ -847,6 +944,127 @@
         return `${period.start}-${period.end} (${period.id}-ci dərs)`;
       }
 
+      function getBreakCycle(context) {
+        const stepSeconds = Math.max(8, Math.floor(CONFIG.breakRotateMs / 1000));
+        const totalSeconds = (context.minutes * 60) + context.now.second;
+        return {
+          stepSeconds,
+          cycleIndex: Math.floor(totalSeconds / stepSeconds),
+          cycleOffset: totalSeconds % stepSeconds
+        };
+      }
+
+      function getBreakItemsFor(mode) {
+        if (!state.breakContent || !Array.isArray(state.breakContent.items)) return [];
+        return state.breakContent.items.filter(item => {
+          const shownIn = safeText(item.shownIn, 'both').toLowerCase();
+          return shownIn === 'both' || shownIn === mode;
+        });
+      }
+
+      function getRotatingBreakItem(context, mode) {
+        const list = getBreakItemsFor(mode);
+        if (!list.length) return null;
+        const cycle = getBreakCycle(context);
+        return list[cycle.cycleIndex % list.length];
+      }
+
+      function renderLangLines(value) {
+        const lang = normalizeLangText(value || '');
+        const az = safeText(lang.az, '');
+        const tr = safeText(lang.tr, '');
+        const en = safeText(lang.en, '');
+        if (!az && !tr && !en) return '<div class="lang-line">—</div>';
+
+        const row = (tag, text) => text
+          ? `<div class="lang-line"><span class="lang-tag">${tag}</span><span>${text}</span></div>`
+          : '';
+
+        return `${row('AZ', az)}${row('TR', tr)}${row('EN', en)}`;
+      }
+
+      function renderBreakOptions(item) {
+        if (!item.options || !item.options.length) return '';
+        const options = item.options.map(option => `
+          <div class="break-option">
+            ${option.icon ? `<span class="break-option-icon">${option.icon}</span>` : ''}
+            ${option.image ? `<img class="break-option-image" src="${option.image}" alt="option" />` : ''}
+            <div class="break-option-text">${renderLangLines(option.text)}</div>
+          </div>
+        `).join('');
+
+        return `<div class="break-options">${options}</div>`;
+      }
+
+      function renderBreakCard(context, mode) {
+        const item = getRotatingBreakItem(context, mode);
+        if (!item) return '';
+
+        const cycle = getBreakCycle(context);
+        const revealAnswer = cycle.cycleOffset >= Math.floor(cycle.stepSeconds * 0.62);
+        const hasQuestion = safeText(item.question.az || item.question.tr || item.question.en, '') !== '';
+        const hasText = safeText(item.text.az || item.text.tr || item.text.en, '') !== '';
+        const hasPrompt = safeText(item.prompt.az || item.prompt.tr || item.prompt.en, '') !== '';
+        const cardTitle = safeText(item.title.az || item.title.tr || item.title.en, 'Break Challenge');
+
+        return `
+          <div class="break-card">
+            <div class="break-card-head">
+              <div class="break-card-title">${item.icon ? `${item.icon} ` : ''}${cardTitle}</div>
+              <div class="break-card-phase">${revealAnswer ? 'Answer / Cavab' : 'Question / Sual'}</div>
+            </div>
+            ${item.image ? `<img class="break-image" src="${item.image}" alt="break visual" />` : ''}
+            ${hasPrompt ? `<div class="break-block">${renderLangLines(item.prompt)}</div>` : ''}
+            ${hasQuestion ? `<div class="break-block">${renderLangLines(item.question)}</div>` : ''}
+            ${hasText ? `<div class="break-block">${renderLangLines(item.text)}</div>` : ''}
+            ${renderBreakOptions(item)}
+            ${revealAnswer ? `<div class="break-answer">${renderLangLines(item.answer)}</div>` : ''}
+            ${!revealAnswer && item.hint ? `<div class="break-hint">${renderLangLines(item.hint)}</div>` : ''}
+          </div>
+        `;
+      }
+
+      function estimateAgeFromClassId(classId) {
+        const normalized = String(classId || '').toUpperCase();
+        if (normalized.startsWith('PRES')) return 7;
+        const match = normalized.match(/^(\d{1,2})/);
+        if (!match) return 12;
+        const grade = Number(match[1]);
+        if (Number.isNaN(grade)) return 12;
+        return Math.max(7, Math.min(16, grade + 5));
+      }
+
+      function getBookRecommendation(context) {
+        if (!state.breakContent || !Array.isArray(state.breakContent.books) || !state.breakContent.books.length) return null;
+        const targetAge = estimateAgeFromClassId(state.selectedClassId);
+        const scoped = state.breakContent.books.filter(book => targetAge >= book.ageMin && targetAge <= book.ageMax);
+        const books = scoped.length ? scoped : state.breakContent.books;
+        const key = (context.now.day * 31) + context.minutes;
+        return {
+          book: books[key % books.length],
+          targetAge
+        };
+      }
+
+      function renderBookRecommendation(context) {
+        const selected = getBookRecommendation(context);
+        if (!selected || !selected.book) return '';
+        const { book, targetAge } = selected;
+
+        return `
+          <div class="book-reco">
+            <div class="book-reco-head">
+              <div class="book-reco-title">${book.icon || '📚'} Book Recommendation</div>
+              <div class="book-reco-age">Age ${targetAge}</div>
+            </div>
+            ${book.cover ? `<img class="book-cover" src="${book.cover}" alt="${book.title}" />` : ''}
+            <div class="book-name">${book.title}</div>
+            <div class="book-author">${book.author ? `by ${book.author}` : ''}</div>
+            <div class="book-note">${renderLangLines(book.note)}</div>
+          </div>
+        `;
+      }
+
       function renderHeader(context) {
         dom.clock.textContent = `${pad2(context.now.hour)}:${pad2(context.now.minute)}`;
         dom.date.textContent = formatDateDisplay(context.now);
@@ -950,6 +1168,8 @@
           const previewLunch = shouldShowLunchPreview(context)
             ? renderLunchPreview(context)
             : '';
+          const breakCard = renderBreakCard(context, 'break');
+          const bookReco = renderBookRecommendation(context);
 
           dom.mainContent.innerHTML = `
             <div class="state break">TƏNƏFFÜS</div>
@@ -958,6 +1178,8 @@
             ${buildInfoRow('Müəllim', safeText(nextLesson ? nextLesson.teacher : null))}
             ${buildInfoRow('Saat', nextPeriod ? formatPeriodText(nextPeriod) : '—')}
             ${minutesToNext !== null ? buildInfoRow('Qalıb', `${minutesToNext} dəqiqə`) : ''}
+            ${breakCard}
+            ${bookReco}
             ${previewLunch}
           `;
           return;
@@ -1042,6 +1264,7 @@
       function renderLunchOverlay(context) {
         if (!context.isLunch) {
           dom.lunchOverlay.classList.add('hidden');
+          if (dom.lunchFun) dom.lunchFun.innerHTML = '';
           return;
         }
 
@@ -1071,6 +1294,12 @@
           dom.lunchCountdown.textContent = `${context.lunchRemaining} dəqiqə sonra dərs davam edəcək`;
         } else {
           dom.lunchCountdown.textContent = '';
+        }
+
+        if (dom.lunchFun) {
+          const lunchCard = renderBreakCard(context, 'lunch');
+          const lunchBook = renderBookRecommendation(context);
+          dom.lunchFun.innerHTML = `${lunchCard}${lunchBook}`;
         }
       }
 

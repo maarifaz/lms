@@ -1,0 +1,246 @@
+{
+  "rotation_seconds": 15,
+  "quizzes": [
+    {
+      "icon": "🪐",
+      "shown_in": "break",
+      "title": { "az": "Kosmos Quiz", "tr": "Uzay Quiz", "en": "Space Quiz" },
+      "question": {
+        "az": "Qırmızı planet hansıdır?",
+        "tr": "Kızıl gezegen hangisidir?",
+        "en": "Which planet is known as the Red Planet?"
+      },
+      "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/02/OSIRIS_Mars_true_color.jpg/320px-OSIRIS_Mars_true_color.jpg",
+      "options": [
+        { "icon": "🟠", "text": { "az": "Yupiter", "tr": "Jüpiter", "en": "Jupiter" } },
+        { "icon": "🔴", "text": { "az": "Mars", "tr": "Mars", "en": "Mars" } },
+        { "icon": "🟡", "text": { "az": "Venera", "tr": "Venüs", "en": "Venus" } },
+        { "icon": "🔵", "text": { "az": "Yer", "tr": "Dünya", "en": "Earth" } }
+      ],
+      "answer": { "az": "Doğru cavab: Mars", "tr": "Doğru cevap: Mars", "en": "Correct answer: Mars" },
+      "hint": { "az": "İpucu: Rəngi qırmızıdır.", "tr": "İpucu: Rengi kırmızıdır.", "en": "Hint: It looks red." }
+    },
+    {
+      "icon": "➗",
+      "shown_in": "break",
+      "title": { "az": "Riyaziyyat Sprint", "tr": "Matematik Sprint", "en": "Math Sprint" },
+      "question": {
+        "az": "20-nin 3/4 hissəsi neçədir?",
+        "tr": "20'nin 3/4'ü kaçtır?",
+        "en": "What is 3/4 of 20?"
+      },
+      "options": [
+        { "icon": "1️⃣", "text": { "az": "12", "tr": "12", "en": "12" } },
+        { "icon": "2️⃣", "text": { "az": "15", "tr": "15", "en": "15" } },
+        { "icon": "3️⃣", "text": { "az": "16", "tr": "16", "en": "16" } },
+        { "icon": "4️⃣", "text": { "az": "18", "tr": "18", "en": "18" } }
+      ],
+      "answer": { "az": "Doğru cavab: 15", "tr": "Doğru cevap: 15", "en": "Correct answer: 15" }
+    },
+    {
+      "icon": "🧪",
+      "shown_in": "both",
+      "title": { "az": "Elm Quiz", "tr": "Bilim Quiz", "en": "Science Quiz" },
+      "question": {
+        "az": "Suyun qaynama temperaturu (normal təzyiqdə) neçədir?",
+        "tr": "Suyun kaynama sıcaklığı (normal basınçta) kaçtır?",
+        "en": "What is the boiling point of water at normal pressure?"
+      },
+      "options": [
+        { "icon": "A", "text": { "az": "90°C", "tr": "90°C", "en": "90°C" } },
+        { "icon": "B", "text": { "az": "95°C", "tr": "95°C", "en": "95°C" } },
+        { "icon": "C", "text": { "az": "100°C", "tr": "100°C", "en": "100°C" } },
+        { "icon": "D", "text": { "az": "110°C", "tr": "110°C", "en": "110°C" } }
+      ],
+      "answer": { "az": "Doğru cavab: 100°C", "tr": "Doğru cevap: 100°C", "en": "Correct answer: 100°C" }
+    }
+  ],
+  "true_false": [
+    {
+      "icon": "✅",
+      "shown_in": "break",
+      "title": { "az": "Doğru / Yanlış", "tr": "Doğru / Yanlış", "en": "True / False" },
+      "question": {
+        "az": "Yarasa kor olur.",
+        "tr": "Yarasalar kördür.",
+        "en": "Bats are blind."
+      },
+      "answer": {
+        "az": "Yanlış. Yarasa görə bilir və səs dalğası ilə yön tapır.",
+        "tr": "Yanlış. Yarasa görür ve ses dalgasıyla yön bulur.",
+        "en": "False. Bats can see and also use echolocation."
+      }
+    },
+    {
+      "icon": "🌍",
+      "shown_in": "lunch",
+      "title": { "az": "Doğru / Yanlış", "tr": "Doğru / Yanlış", "en": "True / False" },
+      "question": {
+        "az": "Yer Günəş ətrafında fırlanır.",
+        "tr": "Dünya Güneş'in etrafında döner.",
+        "en": "Earth revolves around the Sun."
+      },
+      "answer": { "az": "Doğru", "tr": "Doğru", "en": "True" }
+    }
+  ],
+  "riddles": [
+    {
+      "icon": "🎹",
+      "shown_in": "break",
+      "title": { "az": "Tapmaca", "tr": "Bilmece", "en": "Riddle" },
+      "question": {
+        "az": "Açarları var, amma qapı aça bilmir. Bu nədir?",
+        "tr": "Tuşları var ama kapı açamaz. Bu nedir?",
+        "en": "It has keys but cannot open locks. What is it?"
+      },
+      "answer": { "az": "Piano", "tr": "Piyano", "en": "A piano" }
+    },
+    {
+      "icon": "🗣️",
+      "shown_in": "both",
+      "title": { "az": "Tapmaca", "tr": "Bilmece", "en": "Riddle" },
+      "question": {
+        "az": "Ağzım yoxdur, amma danışa bilirəm. Mən nəyəm?",
+        "tr": "Ağzım yok ama konuşurum. Ben neyim?",
+        "en": "I can speak without a mouth. What am I?"
+      },
+      "answer": { "az": "Səda (echo)", "tr": "Yankı (echo)", "en": "An echo" }
+    }
+  ],
+  "activities": [
+    {
+      "icon": "🧘",
+      "shown_in": "break",
+      "title": { "az": "Hərəkət dəqiqəsi", "tr": "Hareket dakikası", "en": "Move Minute" },
+      "prompt": {
+        "az": "4 dəfə dərin nəfəs al: 4 saniyə al, 4 saniyə saxla, 4 saniyə ver.",
+        "tr": "4 tur derin nefes: 4 sn al, 4 sn tut, 4 sn ver.",
+        "en": "Take 4 deep breaths: inhale 4s, hold 4s, exhale 4s."
+      },
+      "hint": {
+        "az": "Çiyinlərini boş saxla.",
+        "tr": "Omuzlarını gevşek bırak.",
+        "en": "Keep your shoulders relaxed."
+      }
+    },
+    {
+      "icon": "🤸",
+      "shown_in": "lunch",
+      "title": { "az": "Enerji fasiləsi", "tr": "Enerji molası", "en": "Energy Break" },
+      "prompt": {
+        "az": "Ayaqda 20 saniyə yüngül dartınma et.",
+        "tr": "Ayakta 20 saniye hafif esneme yap.",
+        "en": "Do 20 seconds of light standing stretch."
+      }
+    }
+  ],
+  "facts": [
+    {
+      "icon": "🍯",
+      "shown_in": "both",
+      "title": { "az": "Maraqlı fakt", "tr": "İlginç bilgi", "en": "Fun Fact" },
+      "text": {
+        "az": "Bal düzgün saxlananda çox uzun müddət xarab olmur.",
+        "tr": "Bal doğru saklanırsa çok uzun süre bozulmaz.",
+        "en": "Honey can last a very long time when stored properly."
+      },
+      "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6e/Honey_dipper.jpg/320px-Honey_dipper.jpg"
+    },
+    {
+      "icon": "☀️",
+      "shown_in": "both",
+      "title": { "az": "Maraqlı fakt", "tr": "İlginç bilgi", "en": "Fun Fact" },
+      "text": {
+        "az": "Günəş işığı Yerə təxminən 8 dəqiqə 20 saniyəyə çatır.",
+        "tr": "Güneş ışığı Dünya'ya yaklaşık 8 dakika 20 saniyede gelir.",
+        "en": "Sunlight reaches Earth in about 8 minutes 20 seconds."
+      }
+    }
+  ],
+  "books": [
+    {
+      "title": "Charlie and the Chocolate Factory",
+      "author": "Roald Dahl",
+      "age_min": 7,
+      "age_max": 10,
+      "icon": "🍫",
+      "note": {
+        "az": "Xəyal gücünü artıran və çox əyləncəli bir hekayə.",
+        "tr": "Hayal gücünü geliştiren ve çok eğlenceli bir hikaye.",
+        "en": "A fun story that boosts imagination."
+      }
+    },
+    {
+      "title": "Matilda",
+      "author": "Roald Dahl",
+      "age_min": 8,
+      "age_max": 11,
+      "icon": "📚",
+      "note": {
+        "az": "Oxumağı sevən güclü bir uşağın hekayəsi.",
+        "tr": "Okumayı seven güçlü bir çocuğun hikayesi.",
+        "en": "The story of a brilliant child who loves reading."
+      }
+    },
+    {
+      "title": "The Little Prince",
+      "author": "Antoine de Saint-Exupery",
+      "age_min": 9,
+      "age_max": 13,
+      "icon": "🌟",
+      "note": {
+        "az": "Dostluq və dəyərlər haqqında klassik kitab.",
+        "tr": "Dostluk ve değerler hakkında klasik bir kitap.",
+        "en": "A classic book about friendship and values."
+      }
+    },
+    {
+      "title": "Wonder",
+      "author": "R. J. Palacio",
+      "age_min": 10,
+      "age_max": 14,
+      "icon": "💙",
+      "note": {
+        "az": "Empatiya və hörmət mövzusunda güclü hekayə.",
+        "tr": "Empati ve saygı üzerine güçlü bir hikaye.",
+        "en": "A powerful story about empathy and kindness."
+      }
+    },
+    {
+      "title": "Percy Jackson and the Olympians",
+      "author": "Rick Riordan",
+      "age_min": 11,
+      "age_max": 15,
+      "icon": "⚡",
+      "note": {
+        "az": "Macəra və mifologiyanı sevənlər üçün.",
+        "tr": "Macera ve mitoloji sevenler için.",
+        "en": "Great for students who enjoy adventure and mythology."
+      }
+    },
+    {
+      "title": "The Hobbit",
+      "author": "J. R. R. Tolkien",
+      "age_min": 12,
+      "age_max": 16,
+      "icon": "🧭",
+      "note": {
+        "az": "Fantastik dünyaya giriş üçün ideal seçim.",
+        "tr": "Fantastik dünyaya giriş için harika bir seçim.",
+        "en": "An excellent entry into fantasy literature."
+      }
+    },
+    {
+      "title": "Anne of Green Gables",
+      "author": "L. M. Montgomery",
+      "age_min": 10,
+      "age_max": 16,
+      "icon": "🍃",
+      "note": {
+        "az": "İlham verən və isti bir klassik.",
+        "tr": "İlham veren, sıcak bir klasik.",
+        "en": "An inspiring and warm classic."
+      }
+    }
+  ]
+}

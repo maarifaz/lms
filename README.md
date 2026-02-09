@@ -7,11 +7,12 @@ Məktəb koridorundakı TV üçün tam ekran “Dərs Cədvəli Pano”. Yalnız
 - `styles.css`
 - `data/schedule.json`
 - `data/lunch.json`
+- `data/break-content.json`
 - `README.md`
 
 **Tez başlama**
 1. Repo kökünə bu faylları yerləşdirin.
-2. `data/schedule.json` və `data/lunch.json`-u doldurun.
+2. `data/schedule.json`, `data/lunch.json` və `data/break-content.json`-u doldurun.
 3. GitHub Pages-də publish edin və ya lokalda sadə serverlə açın.
 
 **Qeyd**: Brauzerdə `fetch` lokal fayldan işləməsi üçün faylları serverlə açın. GitHub Pages-də avtomatik işləyir.
@@ -126,6 +127,48 @@ Qaydalar:
 - `lunch_start`/`lunch_end` vaxt aralığıdır (12:30–13:30).
 - `preview_time` 11:35-də tənəffüs zamanı nahar ön baxışı göstərmək üçündür.
 - `menu` daxilində `YYYY-MM-DD` və ya `Mon/Tue/...` açarları ola bilər.
+
+## Break Content formatı (`data/break-content.json`)
+Bu fayl tənəffüs və nahar zamanı göstərilən əyləncəli kontent üçündür.
+
+Minimal nümunə:
+```json
+{
+  "rotation_seconds": 15,
+  "quizzes": [
+    {
+      "icon": "🧠",
+      "shown_in": "break",
+      "title": { "az": "Quiz", "tr": "Quiz", "en": "Quiz" },
+      "question": { "az": "2+2?", "tr": "2+2?", "en": "2+2?" },
+      "options": [
+        { "icon": "A", "text": { "az": "3", "tr": "3", "en": "3" } },
+        { "icon": "B", "text": { "az": "4", "tr": "4", "en": "4" } }
+      ],
+      "answer": { "az": "4", "tr": "4", "en": "4" }
+    }
+  ],
+  "books": [
+    {
+      "title": "Matilda",
+      "author": "Roald Dahl",
+      "age_min": 8,
+      "age_max": 11,
+      "icon": "📚",
+      "note": {
+        "az": "Oxumağı sevən uşaq haqqında hekayə",
+        "tr": "Kitap seven bir çocuk hikayesi",
+        "en": "A story about a child who loves reading"
+      }
+    }
+  ]
+}
+```
+
+Qaydalar:
+- `shown_in`: `break`, `lunch`, `both`.
+- Məzmunu `AZ`, `TR`, `EN` dillərində eyni anda göstərmək üçün `title/question/answer/note` obyekt formatından istifadə edin.
+- `image` verilərsə kartda şəkil göstərilir.
 
 ## Davranışlar
 - Sağ panel avtomatik **Rotation Mode** ilə 10-15 saniyədən bir aktiv siniflər arasında keçir.
