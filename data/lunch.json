@@ -1,0 +1,38 @@
+﻿{
+  "school_name": "Azərbaycan Beynəlxalq Maarif Məktəbləri – Nərimanov kampusu",
+  "lunch_start": "12:30",
+  "lunch_end": "13:30",
+  "preview_time": "11:35",
+  "menu": {
+    "2026-02-09": {
+      "items": [
+        "Şorba: Düyülü toyuq şorbası",
+        "Əsas yemək: Mantı, qatıq",
+        "Qarnir: Sadə plov",
+        "Salat: Kələm turşusu",
+        "Desert: Meyvə",
+        "İçki: Kompot"
+      ]
+    },
+    "2026-02-10": {
+      "items": [
+        "Şorba: Borş",
+        "Əsas yemək: Qızardılmış toyuq filesi",
+        "Qarnir: Ev sayağı kartof qızartması",
+        "Salat: Çuğundurlu kök salatı",
+        "Desert: İslak kek",
+        "İçki: Kompot"
+      ]
+    },
+    "Mon": {
+      "items": [
+        "Şorba: Pomidor şorbası",
+        "Əsas yemək: Sobada toyuq tikələri",
+        "Qarnir: Əriştəli plov",
+        "Salat: Çuğundur salatı",
+        "Desert: Meyvə",
+        "İçki: Ayran"
+      ]
+    }
+  }
+}

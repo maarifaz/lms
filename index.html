@@ -1,0 +1,1088 @@
+﻿<!doctype html>
+<html lang="az">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dərs Cədvəli Pano</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="app" class="app">
+    <header class="app-header">
+      <div class="school-block">
+        <div id="school-name" class="school-name">Dərs Cədvəli Pano</div>
+        <div id="term" class="term">—</div>
+      </div>
+      <div class="time-block">
+        <div id="clock" class="clock">00:00</div>
+        <div id="date" class="date">—</div>
+      </div>
+      <div id="status" class="status">Hazırda: —</div>
+    </header>
+
+    <main class="app-main">
+      <section class="panel main-panel">
+        <div class="panel-header">
+          <div id="selected-class" class="selected-class">—</div>
+          <div id="pinned-indicator" class="pinned hidden">PINNED</div>
+        </div>
+        <div id="main-content" class="main-content">
+          <div class="state">Məlumat yüklənir...</div>
+        </div>
+      </section>
+
+      <aside class="panel side-panel">
+        <div class="side-header">Siniflər</div>
+        <div id="class-list" class="class-list"></div>
+      </aside>
+    </main>
+
+    <footer class="app-footer">
+      <div class="ticker">
+        <span class="ticker-label">Elanlar</span>
+        <div id="ticker-track" class="ticker-track">
+          <div class="ticker-item">&nbsp;</div>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <div id="lunch-overlay" class="lunch-overlay hidden">
+    <div class="lunch-card">
+      <div class="lunch-title">NAHAR / LUNCH</div>
+      <div id="lunch-date" class="lunch-date">—</div>
+      <div id="lunch-menu" class="lunch-menu"></div>
+      <div id="lunch-countdown" class="lunch-countdown"></div>
+    </div>
+  </div>
+
+  <div id="error-banner" class="error-banner hidden">Data yüklənmədi — internet/JSON yoxlayın.</div>
+
+  <script>
+    (() => {
+      'use strict';
+
+      // === Konfiqurasiya ===
+      const CONFIG = {
+        timezone: 'Asia/Baku',
+        useTimeZone: true,
+        refreshMs: 10000, // hər 10 saniyə UI yenilə
+        rotationMs: 12000, // 10-15 saniyə aralığı
+        pinnedTimeoutMs: 60000, // 60 saniyə toxunulmasa avtomatik rotation
+        dataRefreshMs: 5 * 60 * 1000, // 5 dəqiqə
+        dataRetryMs: 30000,
+        lunchDefaults: {
+          start: '12:30',
+          end: '13:30',
+          previewTime: '11:35'
+        }
+      };
+
+      const dom = {
+        schoolName: document.getElementById('school-name'),
+        term: document.getElementById('term'),
+        clock: document.getElementById('clock'),
+        date: document.getElementById('date'),
+        status: document.getElementById('status'),
+        selectedClass: document.getElementById('selected-class'),
+        pinnedIndicator: document.getElementById('pinned-indicator'),
+        mainContent: document.getElementById('main-content'),
+        classList: document.getElementById('class-list'),
+        lunchOverlay: document.getElementById('lunch-overlay'),
+        lunchDate: document.getElementById('lunch-date'),
+        lunchMenu: document.getElementById('lunch-menu'),
+        lunchCountdown: document.getElementById('lunch-countdown'),
+        errorBanner: document.getElementById('error-banner')
+      };
+
+      const state = {
+        schedule: null,
+        lunch: null,
+        classes: [],
+        classEls: new Map(),
+        selectedClassId: null,
+        lastSelectedClassId: null,
+        rotationIndex: 0,
+        pinnedUntil: 0,
+        lastDayKey: null,
+        retryTimeout: null
+      };
+
+      const WEEKDAY_MAP = {
+        Mon: 'Bazar ertəsi',
+        Tue: 'Çərşənbə axşamı',
+        Wed: 'Çərşənbə',
+        Thu: 'Cümə axşamı',
+        Fri: 'Cümə',
+        Sat: 'Şənbə',
+        Sun: 'Bazar'
+      };
+
+      const MONTHS_AZ = [
+        'Yanvar', 'Fevral', 'Mart', 'Aprel', 'May', 'İyun',
+        'İyul', 'Avqust', 'Sentyabr', 'Oktyabr', 'Noyabr', 'Dekabr'
+      ];
+
+      const MONTHS_AZ_LOWER = {
+        yanvar: 1,
+        fevral: 2,
+        mart: 3,
+        aprel: 4,
+        may: 5,
+        iyun: 6,
+        iyul: 7,
+        avqust: 8,
+        sentyabr: 9,
+        oktyabr: 10,
+        noyabr: 11,
+        dekabr: 12
+      };
+
+      function pad2(num) {
+        return String(num).padStart(2, '0');
+      }
+
+      function timeToMinutes(timeStr) {
+        if (!timeStr || typeof timeStr !== 'string') return null;
+        const parts = timeStr.split(':');
+        if (parts.length < 2) return null;
+        const h = Number(parts[0]);
+        const m = Number(parts[1]);
+        if (Number.isNaN(h) || Number.isNaN(m)) return null;
+        return h * 60 + m;
+      }
+
+      function minutesToTime(minutes) {
+        const h = Math.floor(minutes / 60);
+        const m = minutes % 60;
+        return `${pad2(h)}:${pad2(m)}`;
+      }
+
+      function safeText(text, fallback = '—') {
+        if (text === null || text === undefined) return fallback;
+        const s = String(text).trim();
+        return s.length ? s : fallback;
+      }
+
+      function getNowParts() {
+        const now = new Date();
+        if (!CONFIG.useTimeZone) {
+          return {
+            year: now.getFullYear(),
+            month: now.getMonth() + 1,
+            day: now.getDate(),
+            hour: now.getHours(),
+            minute: now.getMinutes(),
+            second: now.getSeconds(),
+            weekday: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][now.getDay()]
+          };
+        }
+
+        try {
+          const dtf = new Intl.DateTimeFormat('en-GB', {
+            timeZone: CONFIG.timezone,
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            weekday: 'short',
+            hour12: false
+          });
+          const parts = dtf.formatToParts(now);
+          const map = {};
+          for (const p of parts) {
+            map[p.type] = p.value;
+          }
+          return {
+            year: Number(map.year),
+            month: Number(map.month),
+            day: Number(map.day),
+            hour: Number(map.hour),
+            minute: Number(map.minute),
+            second: Number(map.second),
+            weekday: map.weekday
+          };
+        } catch (err) {
+          // Intl timeZone dəstəklənmirsə, lokal vaxta düşür
+          return {
+            year: now.getFullYear(),
+            month: now.getMonth() + 1,
+            day: now.getDate(),
+            hour: now.getHours(),
+            minute: now.getMinutes(),
+            second: now.getSeconds(),
+            weekday: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][now.getDay()]
+          };
+        }
+      }
+
+      function formatDateDisplay(parts) {
+        const dayName = WEEKDAY_MAP[parts.weekday] || parts.weekday;
+        const monthName = MONTHS_AZ[parts.month - 1] || '';
+        return `${pad2(parts.day)} ${monthName} ${parts.year} • ${dayName}`;
+      }
+
+      function normalizeDayKey(key) {
+        if (!key) return null;
+        const k = String(key).trim();
+        const upper = k.toLowerCase();
+        const map = {
+          mon: 'Mon', monday: 'Mon', pa: 'Mon', p: 'Mon',
+          tue: 'Tue', tuesday: 'Tue', sa: 'Tue', s: 'Tue',
+          wed: 'Wed', wednesday: 'Wed', ça: 'Wed', ca: 'Wed',
+          thu: 'Thu', thursday: 'Thu', pe: 'Thu',
+          fri: 'Fri', friday: 'Fri', cu: 'Fri',
+          sat: 'Sat', saturday: 'Sat', şənbə: 'Sat',
+          sun: 'Sun', sunday: 'Sun', bazar: 'Sun'
+        };
+        return map[upper] || null;
+      }
+
+      function normalizeClassId(id) {
+        return String(id || '').replace(/\s+/g, '').trim();
+      }
+
+      function canonicalizeClassId(id) {
+        const compact = normalizeClassId(id).toUpperCase();
+        const presMatch = compact.match(/^PRES(\d+)$/);
+        if (presMatch) return `PreS${presMatch[1]}`;
+        return compact;
+      }
+
+      function sortClassIds(a, b) {
+        return a.localeCompare(b, 'az', { numeric: true, sensitivity: 'base' });
+      }
+
+      function normalizeLesson(value) {
+        if (value === null || value === undefined || value === '') return null;
+        if (typeof value === 'string') {
+          return { subject: value, teacher: '' };
+        }
+        if (typeof value === 'object') {
+          return {
+            subject: value.subject || value.lesson || value.name || value.title || '',
+            teacher: value.teacher || value.instructor || '',
+            room: value.room || ''
+          };
+        }
+        return null;
+      }
+
+      function detectMaxPeriod(raw) {
+        let maxPeriod = 0;
+
+        if (Array.isArray(raw.periods)) {
+          raw.periods.forEach((p, idx) => {
+            const periodId = Number(p && (p.id || p.period || (idx + 1)));
+            if (periodId > maxPeriod) maxPeriod = periodId;
+          });
+        }
+
+        if (Array.isArray(raw.schedule_data)) {
+          raw.schedule_data.forEach(entry => {
+            const schedule = entry && entry.schedule;
+            if (!schedule || typeof schedule !== 'object') return;
+            Object.values(schedule).forEach(dayPeriods => {
+              if (!dayPeriods || typeof dayPeriods !== 'object') return;
+              Object.keys(dayPeriods).forEach(periodRaw => {
+                const periodId = Number(periodRaw);
+                if (periodId > maxPeriod) maxPeriod = periodId;
+              });
+            });
+          });
+        }
+
+        return maxPeriod || 8;
+      }
+
+      function buildDefaultPeriods(maxPeriod) {
+        const templates = [
+          ['08:30', '09:10'],
+          ['09:20', '10:00'],
+          ['10:10', '10:50'],
+          ['11:00', '11:35'],
+          ['11:45', '12:25'],
+          ['13:30', '14:10'],
+          ['14:20', '15:00'],
+          ['15:10', '15:50']
+        ];
+
+        const periods = [];
+        const count = Math.max(1, Number(maxPeriod) || 8);
+        for (let i = 0; i < count; i += 1) {
+          if (templates[i]) {
+            periods.push({ id: i + 1, start: templates[i][0], end: templates[i][1] });
+            continue;
+          }
+
+          // 8-ci perioddan sonra avtomatik 40 dəqiqə dərs + 10 dəqiqə fasilə
+          const prev = periods[periods.length - 1];
+          const nextStartMin = timeToMinutes(prev.end) + 10;
+          const nextEndMin = nextStartMin + 40;
+          periods.push({
+            id: i + 1,
+            start: minutesToTime(nextStartMin),
+            end: minutesToTime(nextEndMin)
+          });
+        }
+
+        return periods;
+      }
+
+      function normalizePeriods(rawPeriods, fallbackMaxPeriod) {
+        const source = Array.isArray(rawPeriods) && rawPeriods.length
+          ? rawPeriods
+          : buildDefaultPeriods(fallbackMaxPeriod);
+
+        return source.map((p, idx) => {
+          const id = p.id || p.period || (idx + 1);
+          const start = p.start;
+          const end = p.end;
+          const startMin = timeToMinutes(start);
+          const endMin = timeToMinutes(end);
+          if (startMin === null || endMin === null) {
+            throw new Error('period saatları düzgün deyil');
+          }
+          return {
+            id: Number(id),
+            start,
+            end,
+            startMin,
+            endMin
+          };
+        });
+      }
+
+      function extractClassIdsFromLabel(label) {
+        const text = String(label || '');
+        const found = new Set();
+
+        const pushClass = (value, prefix) => {
+          if (!value) return;
+          const normalized = canonicalizeClassId(prefix ? `${prefix}${value}` : value)
+            .replace(/^GRADE/i, '')
+            .replace(/^GR/i, '')
+            .trim();
+          if (normalized) found.add(normalized);
+        };
+
+        const gradeRegex = /\b(?:Grade|Gr)\s*([0-9]+[A-Z]?(?:-[0-9]+[A-Z]?)?)\b/gi;
+        let gradeMatch = gradeRegex.exec(text);
+        while (gradeMatch) {
+          pushClass(gradeMatch[1], '');
+          gradeMatch = gradeRegex.exec(text);
+        }
+
+        const presRegex = /\bPreS\s*([0-9]+)\b/gi;
+        let presMatch = presRegex.exec(text);
+        while (presMatch) {
+          pushClass(presMatch[1], 'PRES');
+          presMatch = presRegex.exec(text);
+        }
+
+        if (!found.size && /\bblok\b/i.test(text)) {
+          const numeric = text.match(/\b(\d{1,2})\b/);
+          pushClass(numeric ? numeric[1] : '9', '');
+        }
+
+        return Array.from(found);
+      }
+
+      function stripClassFromLabel(label) {
+        const original = String(label || '').trim();
+        if (!original) return '';
+
+        let text = original
+          .replace(/\b(?:Grade|Gr)\s*[0-9]+[A-Z]?(?:-[0-9]+[A-Z]?)?\b/gi, '')
+          .replace(/\bPreS\s*[0-9]+\b/gi, '')
+          .replace(/\s*\(\s*Blok[^)]*\)\s*/gi, ' ')
+          .replace(/\s{2,}/g, ' ')
+          .trim();
+
+        return text || original;
+      }
+
+      function mergeLesson(existing, incoming) {
+        if (!existing) return incoming;
+        if (!incoming) return existing;
+
+        const subjectParts = [existing.subject, incoming.subject]
+          .map(part => safeText(part, ''))
+          .filter(Boolean);
+        const teacherParts = [existing.teacher, incoming.teacher]
+          .map(part => safeText(part, ''))
+          .filter(Boolean);
+
+        const subject = Array.from(new Set(subjectParts)).join(' | ');
+        const teacher = Array.from(new Set(teacherParts)).join(' / ');
+
+        return {
+          subject: subject || '—',
+          teacher: teacher || '—'
+        };
+      }
+
+      function normalizeClassBasedWeek(weekRaw, normalizedPeriods) {
+        const week = {};
+
+        for (const [dayKey, dayVal] of Object.entries(weekRaw || {})) {
+          const normalizedDay = normalizeDayKey(dayKey);
+          if (!normalizedDay) continue;
+          const classesRaw = dayVal && dayVal.classes ? dayVal.classes : dayVal;
+          if (!classesRaw || typeof classesRaw !== 'object') continue;
+
+          const classMap = {};
+          for (const [classIdRaw, lessonsRaw] of Object.entries(classesRaw)) {
+            const classId = canonicalizeClassId(classIdRaw);
+            if (!classId) continue;
+
+            const periodMap = {};
+            if (Array.isArray(lessonsRaw)) {
+              lessonsRaw.forEach((lesson, index) => {
+                const periodId = normalizedPeriods[index] ? normalizedPeriods[index].id : index + 1;
+                periodMap[periodId] = normalizeLesson(lesson);
+              });
+            } else if (lessonsRaw && typeof lessonsRaw === 'object') {
+              const direct = lessonsRaw.lessons || lessonsRaw.periods || lessonsRaw;
+              for (const [periodIdRaw, lessonVal] of Object.entries(direct)) {
+                periodMap[Number(periodIdRaw)] = normalizeLesson(lessonVal);
+              }
+            }
+
+            classMap[classId] = periodMap;
+          }
+
+          week[normalizedDay] = { classes: classMap };
+        }
+
+        return week;
+      }
+
+      function normalizeTeacherBasedWeek(scheduleData) {
+        const week = {};
+
+        (scheduleData || []).forEach(entry => {
+          const teacher = safeText(entry && entry.teacher, '');
+          const schedule = entry && entry.schedule;
+          if (!schedule || typeof schedule !== 'object') return;
+
+          for (const [dayRaw, periodsRaw] of Object.entries(schedule)) {
+            const day = normalizeDayKey(dayRaw);
+            if (!day || !periodsRaw || typeof periodsRaw !== 'object') continue;
+            if (!week[day]) week[day] = { classes: {} };
+
+            for (const [periodRaw, rawLabel] of Object.entries(periodsRaw)) {
+              const periodId = Number(periodRaw);
+              if (!periodId) continue;
+
+              const label = safeText(rawLabel, '');
+              if (!label) continue;
+              const classIds = extractClassIdsFromLabel(label);
+              if (!classIds.length) continue;
+
+              const subject = stripClassFromLabel(label);
+              const lesson = { subject: safeText(subject), teacher: safeText(teacher) };
+
+              classIds.forEach(classId => {
+                if (!week[day].classes[classId]) {
+                  week[day].classes[classId] = {};
+                }
+                week[day].classes[classId][periodId] = mergeLesson(
+                  week[day].classes[classId][periodId],
+                  lesson
+                );
+              });
+            }
+          }
+        });
+
+        return week;
+      }
+
+      function normalizeSchedule(raw) {
+        if (!raw || typeof raw !== 'object') throw new Error('Schedule JSON boşdur');
+        const maxPeriod = detectMaxPeriod(raw);
+        const normalizedPeriods = normalizePeriods(raw.periods, maxPeriod);
+        const hasTeacherSchedule = Array.isArray(raw.schedule_data) && raw.schedule_data.length > 0;
+        const week = hasTeacherSchedule
+          ? normalizeTeacherBasedWeek(raw.schedule_data)
+          : normalizeClassBasedWeek(raw.week || raw.schedule || {}, normalizedPeriods);
+
+        const classesSet = new Set();
+        Object.values(week).forEach(day => {
+          Object.keys(day.classes || {}).forEach(cls => classesSet.add(cls));
+        });
+
+        return {
+          schoolName: raw.school_name || raw.school || 'Dərs Cədvəli Pano',
+          term: raw.term || '',
+          timezone: raw.timezone || CONFIG.timezone,
+          periods: normalizedPeriods,
+          week,
+          classes: Array.from(classesSet).sort(sortClassIds)
+        };
+      }
+
+      function normalizeDateKey(value, fallbackYear) {
+        if (!value) return null;
+        const str = String(value).trim();
+
+        // ISO format: YYYY-MM-DD
+        const isoMatch = str.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+        if (isoMatch) {
+          const y = Number(isoMatch[1]);
+          const m = Number(isoMatch[2]);
+          const d = Number(isoMatch[3]);
+          return `${y}-${pad2(m)}-${pad2(d)}`;
+        }
+
+        // DD.MM.YYYY
+        const dotMatch = str.match(/^(\d{1,2})\.(\d{1,2})\.(\d{4})/);
+        if (dotMatch) {
+          const d = Number(dotMatch[1]);
+          const m = Number(dotMatch[2]);
+          const y = Number(dotMatch[3]);
+          return `${y}-${pad2(m)}-${pad2(d)}`;
+        }
+
+        // "2 fevral" kimi
+        const monthMatch = str.toLowerCase().match(/(\d{1,2})\s*([a-zəöüğçı]+)\b/);
+        if (monthMatch) {
+          const d = Number(monthMatch[1]);
+          const monthName = monthMatch[2];
+          const m = MONTHS_AZ_LOWER[monthName];
+          const y = fallbackYear || new Date().getFullYear();
+          if (m) return `${y}-${pad2(m)}-${pad2(d)}`;
+        }
+
+        return null;
+      }
+
+      function formatMenuEntry(entry) {
+        if (!entry || typeof entry !== 'object') return [];
+        if (Array.isArray(entry.items)) return entry.items.map(String);
+
+        const order = [
+          ['nutrition', 'Qida dəyərləri'],
+          ['porridge', 'Sıyıq'],
+          ['soup', 'Şorba'],
+          ['main_course', 'Əsas yemək'],
+          ['main_dish', 'Əsas yemək'],
+          ['garnish', 'Qarnir'],
+          ['sides', 'Əlavələr'],
+          ['salad', 'Salat'],
+          ['dessert', 'Desert'],
+          ['extra', 'Əlavə'],
+          ['drink', 'İçki']
+        ];
+
+        const items = [];
+        for (const [key, label] of order) {
+          if (entry[key]) {
+            const value = String(entry[key]).trim();
+            if (value) items.push(`${label}: ${value}`);
+          }
+        }
+
+        return items;
+      }
+
+      function normalizeLunch(raw) {
+        const out = {
+          start: CONFIG.lunchDefaults.start,
+          end: CONFIG.lunchDefaults.end,
+          previewTime: CONFIG.lunchDefaults.previewTime,
+          menuByDate: {},
+          menuByWeekday: {},
+          menuDefault: []
+        };
+
+        if (!raw || typeof raw !== 'object') return out;
+
+        if (raw.lunch_start) out.start = raw.lunch_start;
+        if (raw.lunch_end) out.end = raw.lunch_end;
+        if (raw.preview_time) out.previewTime = raw.preview_time;
+
+        const periodYearMatch = String(raw.period || '').match(/(\d{4})/);
+        const fallbackYear = periodYearMatch ? Number(periodYearMatch[1]) : null;
+
+        if (Array.isArray(raw.menu)) {
+          out.menuDefault = raw.menu.map(item => (item.item ? String(item.item) : String(item)));
+        } else if (raw.menu && typeof raw.menu === 'object') {
+          if (Array.isArray(raw.menu.items)) {
+            out.menuDefault = raw.menu.items.map(String);
+          }
+          for (const [key, value] of Object.entries(raw.menu)) {
+            if (key === 'items') continue;
+            const items = Array.isArray(value) ? value.map(String) : formatMenuEntry(value);
+            if (!items.length) continue;
+            const dayKey = normalizeDayKey(key);
+            if (dayKey) out.menuByWeekday[dayKey] = items;
+            const iso = normalizeDateKey(key, fallbackYear);
+            if (iso) out.menuByDate[iso] = items;
+          }
+        }
+
+        if (raw.menus && Array.isArray(raw.menus.lunch_menu)) {
+          raw.menus.lunch_menu.forEach(entry => {
+            const iso = normalizeDateKey(entry.date, fallbackYear);
+            if (!iso) return;
+            const items = formatMenuEntry(entry);
+            if (items.length) out.menuByDate[iso] = items;
+          });
+        }
+
+        return out;
+      }
+
+      async function fetchJson(path) {
+        const res = await fetch(path, { cache: 'no-store' });
+        if (!res.ok) throw new Error(`Fetch failed: ${path}`);
+        return res.json();
+      }
+
+      async function loadData() {
+        try {
+          const [scheduleRaw, lunchRaw] = await Promise.all([
+            fetchJson('data/schedule.json'),
+            fetchJson('data/lunch.json')
+          ]);
+
+          state.schedule = normalizeSchedule(scheduleRaw);
+          state.lunch = normalizeLunch(lunchRaw);
+
+          // Schedule-dan timezone varsa, onu prioritet edirik
+          if (state.schedule.timezone) {
+            CONFIG.timezone = state.schedule.timezone;
+          }
+
+          dom.schoolName.textContent = state.schedule.schoolName;
+          dom.term.textContent = safeText(state.schedule.term, '');
+
+          state.classes = state.schedule.classes;
+          buildClassList();
+          selectDefaultClass();
+
+          dom.errorBanner.classList.add('hidden');
+        } catch (err) {
+          console.error(err);
+          dom.errorBanner.classList.remove('hidden');
+          scheduleRetry();
+        }
+      }
+
+      function scheduleRetry() {
+        if (state.retryTimeout) return;
+        state.retryTimeout = setTimeout(() => {
+          state.retryTimeout = null;
+          loadData();
+        }, CONFIG.dataRetryMs);
+      }
+
+      function buildClassList() {
+        dom.classList.innerHTML = '';
+        state.classEls.clear();
+
+        state.classes.forEach(classId => {
+          const item = document.createElement('button');
+          item.type = 'button';
+          item.className = 'class-item';
+          item.dataset.classId = classId;
+
+          item.innerHTML = `
+            <div class="class-info">
+              <div class="class-id">${classId}</div>
+              <div class="class-subject">—</div>
+            </div>
+            <div class="class-live">● LIVE</div>
+          `;
+
+          item.addEventListener('click', () => {
+            state.selectedClassId = classId;
+            state.pinnedUntil = Date.now() + CONFIG.pinnedTimeoutMs;
+            state.rotationIndex = 0;
+            render();
+          });
+
+          dom.classList.appendChild(item);
+          state.classEls.set(classId, item);
+        });
+      }
+
+      function selectDefaultClass() {
+        if (!state.selectedClassId && state.classes.length) {
+          state.selectedClassId = state.classes[0];
+        }
+      }
+
+      function getLesson(dayKey, classId, periodId) {
+        const day = state.schedule.week[dayKey];
+        if (!day || !day.classes[classId]) return null;
+        return day.classes[classId][periodId] || null;
+      }
+
+      function getContext() {
+        const now = getNowParts();
+        const dayKey = normalizeDayKey(now.weekday) || now.weekday;
+        const minutes = now.hour * 60 + now.minute;
+
+        const periods = state.schedule.periods;
+        let currentPeriod = null;
+        let nextPeriod = null;
+        let isBreak = false;
+        let isBeforeSchool = false;
+        let isAfterSchool = false;
+
+        for (let i = 0; i < periods.length; i += 1) {
+          const p = periods[i];
+          if (minutes >= p.startMin && minutes < p.endMin) {
+            currentPeriod = p;
+            break;
+          }
+          if (minutes < p.startMin) {
+            nextPeriod = p;
+            break;
+          }
+        }
+
+        if (!currentPeriod && nextPeriod) {
+          isBreak = minutes >= periods[0].startMin;
+          isBeforeSchool = minutes < periods[0].startMin;
+        }
+
+        if (!currentPeriod && !nextPeriod) {
+          isAfterSchool = minutes >= periods[periods.length - 1].endMin;
+        }
+
+        if (currentPeriod) {
+          const idx = periods.findIndex(p => p.id === currentPeriod.id);
+          nextPeriod = periods[idx + 1] || null;
+        }
+
+        const lunchStart = timeToMinutes(state.lunch.start);
+        const lunchEnd = timeToMinutes(state.lunch.end);
+        const isLunch = lunchStart !== null && lunchEnd !== null && minutes >= lunchStart && minutes < lunchEnd;
+        const lunchRemaining = isLunch ? Math.max(0, lunchEnd - minutes) : null;
+
+        return {
+          now,
+          dayKey,
+          minutes,
+          currentPeriod,
+          nextPeriod,
+          isBreak,
+          isBeforeSchool,
+          isAfterSchool,
+          isLunch,
+          lunchRemaining
+        };
+      }
+
+      function getActiveClasses(context) {
+        const classes = state.classes;
+        if (!context.dayKey || !state.schedule.week[context.dayKey]) return classes;
+
+        const period = context.currentPeriod || context.nextPeriod;
+        if (!period) return classes;
+
+        return classes.filter(classId => {
+          const lesson = getLesson(context.dayKey, classId, period.id);
+          return lesson && safeText(lesson.subject, '').length > 0;
+        });
+      }
+
+      function updateRotation(context) {
+        const now = Date.now();
+        const pinnedActive = state.pinnedUntil && now < state.pinnedUntil;
+
+        if (pinnedActive) return;
+
+        const activeClasses = getActiveClasses(context);
+        const list = activeClasses.length ? activeClasses : state.classes;
+        if (!list.length) return;
+
+        state.rotationIndex = state.rotationIndex % list.length;
+        state.rotationIndex = (state.rotationIndex + 1) % list.length;
+        state.selectedClassId = list[state.rotationIndex];
+      }
+
+      function scrollSelectedIntoView() {
+        if (!state.selectedClassId) return;
+        if (state.selectedClassId === state.lastSelectedClassId) return;
+
+        const el = state.classEls.get(state.selectedClassId);
+        if (el && typeof el.scrollIntoView === 'function') {
+          el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        state.lastSelectedClassId = state.selectedClassId;
+      }
+
+      function renderHeader(context) {
+        dom.clock.textContent = `${pad2(context.now.hour)}:${pad2(context.now.minute)}`;
+        dom.date.textContent = formatDateDisplay(context.now);
+
+        let statusText = 'Hazırda: —';
+        if (context.dayKey === 'Sat' || context.dayKey === 'Sun') {
+          statusText = 'Bu gün dərs yoxdur';
+        } else if (context.isBeforeSchool) {
+          statusText = 'Hazırda: Məktəb başlamayıb';
+        } else if (context.isAfterSchool) {
+          statusText = 'Hazırda: Məktəb bitib';
+        } else if (context.isLunch) {
+          statusText = 'Hazırda: Nahar';
+        } else if (context.isBreak) {
+          statusText = 'Hazırda: Tənəffüs';
+        } else if (context.currentPeriod) {
+          statusText = `Hazırda: ${context.currentPeriod.id}-ci dərs`;
+        }
+
+        dom.status.textContent = statusText;
+      }
+
+      function renderClassList(context) {
+        const dayKey = context.dayKey;
+        const isPeriod = Boolean(context.currentPeriod);
+        const periodForList = context.currentPeriod || context.nextPeriod;
+
+        state.classes.forEach(classId => {
+          const el = state.classEls.get(classId);
+          if (!el) return;
+
+          let subject = '—';
+          let liveLabel = '';
+
+          if (dayKey && periodForList) {
+            const lesson = getLesson(dayKey, classId, periodForList.id);
+            subject = lesson ? safeText(lesson.subject) : '—';
+            if (lesson && isPeriod) liveLabel = '● LIVE';
+            if (lesson && !isPeriod && context.isBreak) liveLabel = '● NEXT';
+          }
+
+          el.querySelector('.class-subject').textContent = subject;
+          const liveEl = el.querySelector('.class-live');
+          liveEl.textContent = liveLabel || '● LIVE';
+          liveEl.style.opacity = liveLabel ? '1' : '0';
+
+          el.classList.toggle('active', classId === state.selectedClassId);
+        });
+      }
+
+      function buildInfoRow(label, value) {
+        return `
+          <div class="info-row">
+            <div class="label">${label}</div>
+            <div class="value">${value}</div>
+          </div>
+        `;
+      }
+
+      function renderMainPanel(context) {
+        const classId = state.selectedClassId || '—';
+        dom.selectedClass.textContent = classId;
+
+        const dayKey = context.dayKey;
+        const isWeekend = dayKey === 'Sat' || dayKey === 'Sun';
+
+        if (!state.schedule || !dayKey || !state.schedule.week[dayKey] || isWeekend) {
+          dom.mainContent.innerHTML = `
+            <div class="state">Bu gün dərs yoxdur</div>
+          `;
+          return;
+        }
+
+        if (context.isBeforeSchool) {
+          const first = state.schedule.periods[0];
+          dom.mainContent.innerHTML = `
+            <div class="state">Dərslər ${first.start} başlayır</div>
+          `;
+          return;
+        }
+
+        if (context.isAfterSchool) {
+          const nextPreview = getTomorrowPreview(classId, dayKey);
+          dom.mainContent.innerHTML = `
+            <div class="state">Dərslər bitdi</div>
+            ${nextPreview}
+          `;
+          return;
+        }
+
+        if (context.isBreak) {
+          const nextPeriod = context.nextPeriod;
+          const minutesToNext = nextPeriod ? Math.max(0, nextPeriod.startMin - context.minutes) : null;
+          const nextLesson = nextPeriod ? getLesson(dayKey, classId, nextPeriod.id) : null;
+          const warning = minutesToNext !== null && minutesToNext <= 5 && minutesToNext > 0
+            ? `<div class="warning">Dərs başlayır • ${minutesToNext} dəqiqə qaldı</div>`
+            : '';
+
+          const previewLunch = shouldShowLunchPreview(context)
+            ? renderLunchPreview(context)
+            : '';
+
+          dom.mainContent.innerHTML = `
+            <div class="state break">TƏNƏFFÜS</div>
+            ${warning}
+            ${buildInfoRow('Növbəti dərs', safeText(nextLesson ? nextLesson.subject : null))}
+            ${buildInfoRow('Müəllim', safeText(nextLesson ? nextLesson.teacher : null))}
+            ${buildInfoRow('Saat', nextPeriod ? `${nextPeriod.start}-${nextPeriod.end} (${nextPeriod.id}-ci dərs)` : '—')}
+            ${minutesToNext !== null ? buildInfoRow('Qalıb', `${minutesToNext} dəqiqə`) : ''}
+            ${previewLunch}
+          `;
+          return;
+        }
+
+        if (context.currentPeriod) {
+          const currentLesson = getLesson(dayKey, classId, context.currentPeriod.id);
+          const nextPeriod = context.nextPeriod;
+          const nextLesson = nextPeriod ? getLesson(dayKey, classId, nextPeriod.id) : null;
+
+          dom.mainContent.innerHTML = `
+            ${buildInfoRow('Hazırda', safeText(currentLesson ? currentLesson.subject : null))}
+            ${buildInfoRow('Müəllim', safeText(currentLesson ? currentLesson.teacher : null))}
+            ${buildInfoRow('Saat', `${context.currentPeriod.start}-${context.currentPeriod.end} (${context.currentPeriod.id}-ci dərs)`) }
+            <div class="divider"></div>
+            ${buildInfoRow('Növbəti', safeText(nextLesson ? nextLesson.subject : null))}
+            ${buildInfoRow('Müəllim', safeText(nextLesson ? nextLesson.teacher : null))}
+            ${buildInfoRow('Saat', nextPeriod ? `${nextPeriod.start}-${nextPeriod.end} (${nextPeriod.id}-ci dərs)` : '—')}
+          `;
+          return;
+        }
+
+        dom.mainContent.innerHTML = `<div class="state">—</div>`;
+      }
+
+      function getTomorrowPreview(classId, dayKey) {
+        const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
+        const currentIndex = days.indexOf(dayKey);
+        const nextDay = days[currentIndex + 1] || days[0];
+        const firstPeriod = state.schedule.periods[0];
+        const lesson = getLesson(nextDay, classId, firstPeriod.id);
+        const dayName = WEEKDAY_MAP[nextDay] || nextDay;
+
+        return `
+          <div class="preview">
+            Sabah (${dayName}) ilk dərs:
+            <strong>${safeText(lesson ? lesson.subject : null)}</strong>
+          </div>
+        `;
+      }
+
+      function shouldShowLunchPreview(context) {
+        if (!state.lunch) return false;
+        const previewTime = timeToMinutes(state.lunch.previewTime);
+        if (previewTime === null) return false;
+        return context.isBreak && context.minutes >= previewTime && !context.isLunch;
+      }
+
+      function renderLunchPreview(context) {
+        const menuItems = getLunchMenuItems(context.now);
+        if (!menuItems.length) return '';
+
+        const cards = menuItems.map(item => {
+          const parts = item.split(':');
+          const label = parts.length > 1 ? parts.shift().trim() : '';
+          const text = parts.join(':').trim() || item;
+          return `
+            <div class="menu-item">
+              ${label ? `<div class="menu-label">${label}</div>` : ''}
+              <div class="menu-text">${text}</div>
+            </div>
+          `;
+        }).join('');
+
+        return `
+          <div class="lunch-preview">
+            <div class="lunch-preview-title">Nahar menyusu (ön baxış)</div>
+            <div class="menu-grid">${cards}</div>
+          </div>
+        `;
+      }
+
+      function getLunchMenuItems(nowParts) {
+        if (!state.lunch) return [];
+        const iso = `${nowParts.year}-${pad2(nowParts.month)}-${pad2(nowParts.day)}`;
+        if (state.lunch.menuByDate[iso]) return state.lunch.menuByDate[iso];
+        const dayKey = normalizeDayKey(nowParts.weekday) || nowParts.weekday;
+        if (state.lunch.menuByWeekday[dayKey]) return state.lunch.menuByWeekday[dayKey];
+        return state.lunch.menuDefault || [];
+      }
+
+      function renderLunchOverlay(context) {
+        if (!context.isLunch) {
+          dom.lunchOverlay.classList.add('hidden');
+          return;
+        }
+
+        const items = getLunchMenuItems(context.now);
+        dom.lunchOverlay.classList.remove('hidden');
+        dom.lunchDate.textContent = formatDateDisplay(context.now);
+
+        dom.lunchMenu.innerHTML = '';
+        if (!items.length) {
+          dom.lunchMenu.innerHTML = `<div class="menu-empty">Menyu yoxdur</div>`;
+        } else {
+          items.forEach(item => {
+            const parts = item.split(':');
+            const label = parts.length > 1 ? parts.shift().trim() : '';
+            const text = parts.join(':').trim() || item;
+            const card = document.createElement('div');
+            card.className = 'menu-item';
+            card.innerHTML = `
+              ${label ? `<div class="menu-label">${label}</div>` : ''}
+              <div class="menu-text">${text}</div>
+            `;
+            dom.lunchMenu.appendChild(card);
+          });
+        }
+
+        if (context.lunchRemaining !== null) {
+          dom.lunchCountdown.textContent = `${context.lunchRemaining} dəqiqə sonra dərs davam edəcək`;
+        } else {
+          dom.lunchCountdown.textContent = '';
+        }
+      }
+
+      function render() {
+        if (!state.schedule || !state.lunch) return;
+
+        const context = getContext();
+        const now = Date.now();
+        const pinnedActive = state.pinnedUntil && now < state.pinnedUntil;
+        if (state.pinnedUntil && !pinnedActive) state.pinnedUntil = 0;
+        dom.pinnedIndicator.classList.toggle('hidden', !pinnedActive);
+        renderHeader(context);
+        renderMainPanel(context);
+        renderClassList(context);
+        renderLunchOverlay(context);
+        scrollSelectedIntoView();
+      }
+
+      function startTimers() {
+        setInterval(() => {
+          if (!state.schedule) return;
+          updateRotation(getContext());
+          render();
+        }, CONFIG.rotationMs);
+
+        setInterval(() => {
+          loadData();
+        }, CONFIG.dataRefreshMs);
+
+        setInterval(render, CONFIG.refreshMs);
+      }
+
+      function init() {
+        loadData().finally(() => {
+          render();
+        });
+        startTimers();
+      }
+
+      init();
+    })();
+  </script>
+</body>
+</html>

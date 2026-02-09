@@ -1,0 +1,1267 @@
+﻿{
+  "school_name": "IMSA - Maarif Schools Kampüsü",
+  "generated_date": "30.01.2026",
+  "term": "2. Dönem",
+  "schedule_data": [
+    {
+      "teacher": "Hilal Pastacı Aliyev",
+      "schedule": {}
+    },
+    {
+      "teacher": "Fidan Nəzirova",
+      "schedule": {
+        "Pa": {
+          "1": "Turkish Grade 2A",
+          "2": "Turkish Grade 1B",
+          "3": "Turkish Grade 1A"
+        },
+        "Ça": {
+          "2": "Turkish Grade 1A",
+          "3": "Turkish Grade 3B"
+        },
+        "Pe": {
+          "1": "Turkish Grade 1B",
+          "2": "Turkish Grade 2B",
+          "3": "Turkish Grade 3A",
+          "4": "Turkish Grade 2A",
+          "5": "Turkish Grade 3B"
+        }
+      }
+    },
+    {
+      "teacher": "Vidadi Qənizadə",
+      "schedule": {
+        "Pa": {
+          "1": "Science Grade 3A",
+          "4": "Science Grade 3B",
+          "5": "Science Grade 4B"
+        },
+        "Sa": {
+          "2": "Science Grade 3A",
+          "3": "Biology (1) Gr 9",
+          "4": "Biology (1) Gr 9",
+          "5": "Biology Grade 8"
+        },
+        "Cu": {
+          "1": "Science Grade 3B",
+          "2": "Science Grade 3A",
+          "3": "Science Grade 3B",
+          "4": "Gr 9 (Blok 1)",
+          "5": "Science Grade 4B",
+          "6": "Science Grade 3A",
+          "7": "Science Grade 4A"
+        }
+      }
+    },
+    {
+      "teacher": "Sərxan Məmmədov",
+      "schedule": {
+        "Pa": {
+          "1": "PE2 Sport hall Grade 6B",
+          "3": "PE1 Sport hall Grade 4A",
+          "4": "PE2 Gr 9 (Blok 1-4)",
+          "5": "PE2 Sport hall Grade 8"
+        },
+        "Sa": {
+          "2": "PE2 Grade 5B",
+          "3": "PE2 Grade 7A"
+        },
+        "Ça": {
+          "1": "PE1 Sport hall Grade 4B",
+          "3": "PE2 Sport hall Grade 5A",
+          "4": "Club2 Grade 3A-4R",
+          "5": "PE2 Sport hall Grade 6A",
+          "6": "Club4 Grade 7A-8",
+          "7": "PE2 Grade 7B"
+        },
+        "Cu": {
+          "1": "PE2 Sport hall Grade 6A",
+          "2": "PE2 Sport hall Grade 8",
+          "3": "Club3 Grade 5A-6B",
+          "5": "PE1 Sport hall Grade 4B"
+        }
+      }
+    },
+    {
+      "teacher": "Saraxanım Zöhrabzadə",
+      "schedule": {
+        "Pa": {
+          "1": "Computing Grade 4B",
+          "2": "Computing Grade 4A",
+          "3": "Robotics Grade 1B",
+          "4": "Computing Grade 3A",
+          "5": "Computing Grade 3A",
+          "6": "Computing Grade 4A"
+        },
+        "Sa": {
+          "3": "Club1 Grade 1A-2B",
+          "4": "Computing Grade 3B",
+          "5": "Robotics Grade 3B",
+          "6": "Robotics Grade 4B"
+        },
+        "Ça": {
+          "3": "Club2 Grade 3A-4B",
+          "4": "Computing Grade 2A",
+          "5": "Computing Grade 1A",
+          "7": "Computing Grade 2B"
+        }
+      }
+    },
+    {
+      "teacher": "Aydan Bəyişova",
+      "schedule": {
+        "Pa": {
+          "1": "CircleT PreS3",
+          "2": "Phonics PreS3",
+          "3": "MathSL PreS3",
+          "5": "MathSL PreS3",
+          "8": "Play Time PreS3"
+        },
+        "Sa": {
+          "1": "CircleT PreS3",
+          "2": "Phonics PreS3",
+          "3": "Math PreS3",
+          "4": "EngSL PreS3",
+          "7": "PlayTime PreS3"
+        },
+        "Ça": {
+          "1": "CircleT PreS3",
+          "2": "Phonics PreS3",
+          "3": "Phonics PreS3",
+          "4": "MathSL PreS3",
+          "6": "PlayTime PreS3"
+        },
+        "Pe": {
+          "1": "CircleT PreS3",
+          "3": "Math PreS3",
+          "4": "Math PreS3",
+          "6": "EngSL PreS3",
+          "7": "Math PreS3",
+          "8": "Play Time PreS3"
+        },
+        "Cu": {
+          "1": "CircleT PreS3",
+          "2": "EngSL PreS3",
+          "3": "Science PreS3",
+          "4": "Phonics PreS3",
+          "7": "Play Time PreS3"
+        }
+      }
+    },
+    {
+      "teacher": "Sabina Yusifova",
+      "schedule": {
+        "Pa": {
+          "1": "Chemistry (1) Gr 9",
+          "2": "Science Grade 7A",
+          "3": "Science Grade 7A",
+          "4": "Science Grade 6B"
+        },
+        "Sa": {
+          "2": "Science Grade 7A",
+          "3": "Science Grade 7B",
+          "4": "Science Grade 7B"
+        },
+        "Ça": {
+          "1": "Science Grade 6B",
+          "2": "Science Grade 6A",
+          "3": "Science Grade 6A"
+        },
+        "Pe": {
+          "4": "Chemistry Grade 8",
+          "5": "Science Grade 6A",
+          "6": "Chemistry (1) Gr 9"
+        },
+        "Cu": {
+          "1": "Science Grade 7A",
+          "4": "Science Grade 7B",
+          "5": "Chemistry Grade 8"
+        }
+      }
+    },
+    {
+      "teacher": "Nəzrin Hüseynova",
+      "schedule": {
+        "Ça": {
+          "3": "Arts PreS2",
+          "4": "Arts PreS3",
+          "5": "Arts PreS 1",
+          "6": "Arts Grade 2A",
+          "7": "Club4 Grade 7A-8"
+        },
+        "Pe": {
+          "4": "Arts Grade 1B",
+          "6": "Arts Grade 1A"
+        },
+        "Cu": {
+          "4": "Club3 Grade 5A-6B",
+          "6": "Arts Grade 2B"
+        }
+      }
+    },
+    {
+      "teacher": "Nigar Abbasova",
+      "schedule": {
+        "Pa": {
+          "4": "Physics Grade 8",
+          "5": "Physics Grade 8"
+        },
+        "Sa": {
+          "4": "Science Grade 5A"
+        },
+        "Ça": {
+          "1": "Science Grade 5B",
+          "2": "Science Grade 5B",
+          "3": "Physics (1) Gr 9",
+          "5": "Science Grade 5A"
+        },
+        "Pe": {
+          "6": "Physics (1) Gr 9",
+          "7": "Physics (1) Gr 9"
+        },
+        "Cu": {
+          "6": "Science Grade 5B"
+        }
+      }
+    },
+    {
+      "teacher": "Kəmalə Əkbərova",
+      "schedule": {
+        "Pa": {
+          "1": "Math Grade 6A",
+          "2": "Math Grade 6A",
+          "3": "Math Grade 6B"
+        },
+        "Sa": {
+          "1": "Math Grade 5A",
+          "2": "Math Grade 5B",
+          "3": "Math Grade 5A",
+          "4": "Math Grade 5B"
+        },
+        "Ça": {
+          "1": "Math Grade 6A",
+          "2": "Math Grade 6B",
+          "3": "Math Grade 5B",
+          "4": "Math Grade 5B"
+        },
+        "Pe": {
+          "1": "Math Grade 6A",
+          "2": "Math Grade 6B",
+          "3": "Math Grade 5A"
+        },
+        "Cu": {
+          "1": "Math Grade 5A",
+          "2": "Math Grade 5B",
+          "3": "Math Grade 6B"
+        }
+      }
+    },
+    {
+      "teacher": "Zemfira Abuşova",
+      "schedule": {
+        "Pa": {
+          "1": "RaW Grade 2B",
+          "2": "Math Grade 2B",
+          "3": "EngSL Grade 2B",
+          "4": "EngSL Grade 2B",
+          "5": "Eng G Grade 2B",
+          "6": "Math Grade 2B",
+          "7": "Eng G Grade 2B"
+        },
+        "Sa": {
+          "1": "Eng G Grade 2B",
+          "2": "SCulture Grade 2B",
+          "3": "Eng G Grade 2B",
+          "4": "Math Grade 2B",
+          "5": "Math Grade 2B"
+        },
+        "Ça": {
+          "1": "RaW Grade 2B",
+          "2": "Eng G Grade 2B"
+        },
+        "Pe": {
+          "1": "RaW Grade 2B",
+          "2": "EngSL Grade 2B",
+          "3": "EngSL Grade 2B"
+        },
+        "Cu": {
+          "2": "Speaking Grade 2B",
+          "3": "Eng G Grade 2B",
+          "4": "Math Grade 2B"
+        }
+      }
+    },
+    {
+      "teacher": "Nigina",
+      "schedule": {
+        "Pa": {
+          "1": "Phonics PreS 1",
+          "2": "PlayTime PreS 1",
+          "3": "CircleT PreS 1",
+          "4": "MathSL PreS 1",
+          "5": "EngSL PreS 1",
+          "6": "Science PreS 1"
+        },
+        "Sa": {
+          "1": "PlayTime PreS 1",
+          "2": "Phonics PreS 1",
+          "3": "CircleT PreS 1",
+          "4": "MathSL PreS 1",
+          "5": "MathSL PreS 1"
+        },
+        "Ça": {
+          "1": "PlayTime PreS 1",
+          "2": "Phonics PreS 1",
+          "3": "CircleT PreS 1",
+          "4": "Math PreS 1",
+          "5": "Math PreS 1",
+          "6": "Math PreS 1"
+        },
+        "Pe": {
+          "1": "Phonics PreS 1",
+          "2": "PlayTime PreS 1",
+          "3": "CircleT PreS 1",
+          "4": "EngSL PreS 1",
+          "5": "EngSL PreS 1"
+        },
+        "Cu": {
+          "1": "PlayTime PreS 1",
+          "2": "Phonics PreS 1",
+          "3": "Math PreS 1",
+          "4": "CircleT PreS 1",
+          "5": "Science PreS 1",
+          "6": "EngSL PreS 1"
+        }
+      }
+    },
+    {
+      "teacher": "Nərmin Xanbabayeva",
+      "schedule": {
+        "Pa": {
+          "1": "German Grade 3A",
+          "2": "German Grade 4A",
+          "3": "German Grade 4B",
+          "4": "German Grade 5A"
+        },
+        "Sa": {
+          "1": "German Grade 2B",
+          "2": "German Grade 3A",
+          "3": "German Grade 4B",
+          "4": "German Grade 2A",
+          "5": "German Grade 5A"
+        },
+        "Ça": {
+          "1": "German Grade 5B",
+          "2": "German Grade 2B",
+          "3": "German Grade 5B",
+          "4": "German Grade 2A",
+          "5": "German Grade 3B"
+        },
+        "Pe": {
+          "1": "German Grade 3B",
+          "2": "German Grade 4A",
+          "3": "German (Blok)",
+          "4": "German (Blok)",
+          "5": "German (Blok)"
+        }
+      }
+    },
+    {
+      "teacher": "Aydan Bəşir",
+      "schedule": {
+        "Pa": {
+          "1": "Math Grade 8",
+          "2": "Math Grade 7B",
+          "3": "Math Grade 7B",
+          "4": "Math Gr 9 (Blok)",
+          "5": "Math Grade 7A"
+        },
+        "Sa": {
+          "1": "Math Grade 7B",
+          "2": "Math Grade 7A",
+          "3": "Math Gr 9 (Blok)",
+          "4": "Math Grade 7A",
+          "5": "Math Gr 9 (Blok)"
+        },
+        "Ça": {
+          "1": "Math Grade 7A",
+          "2": "Math Grade 8",
+          "3": "Math Gr 9 (Blok)",
+          "4": "Math Gr 9 (Blok)",
+          "5": "Math Grade 8"
+        },
+        "Pe": {
+          "3": "Math Gr 9 (Blok)",
+          "4": "Math Gr 9 (Blok)"
+        },
+        "Cu": {
+          "1": "Math Grade 7B",
+          "2": "Math Grade 8",
+          "3": "Math Grade 7A"
+        }
+      }
+    },
+    {
+      "teacher": "Kamran Əhmədov",
+      "schedule": {
+        "Pa": {
+          "1": "Music Grade 1A",
+          "2": "Music Grade 1B",
+          "3": "Music Grade 3B",
+          "4": "Music Grade 2A",
+          "5": "Music Grade 4A",
+          "6": "Music Grade 5A"
+        },
+        "Sa": {
+          "4": "Music Grade 5B",
+          "7": "Club1 Grade 1A-2B"
+        },
+        "Ça": {
+          "5": "Music Grade 4B",
+          "7": "Club2 Grade 3A-4B"
+        },
+        "Pe": {
+          "7": "Club4 Grade 7A-8"
+        },
+        "Cu": {
+          "1": "Music Grade 3A",
+          "2": "Music PreS 1",
+          "3": "Music PreS3",
+          "4": "Music Grade 2B",
+          "5": "Music PreS2",
+          "7": "Club3 Grade 5A-6B"
+        }
+      }
+    },
+    {
+      "teacher": "Gülnarə Süleymanova",
+      "schedule": {
+        "Pa": {
+          "1": "RaW Grade 5B",
+          "2": "Eng G Grade 7A",
+          "3": "Eng G Grade 7A",
+          "4": "Eng G Grade 5B"
+        },
+        "Sa": {
+          "1": "Eng G Grade 7A",
+          "2": "EngSL Grade 5B",
+          "3": "Eng G Grade 5B",
+          "4": "EngSL Grade 5B"
+        },
+        "Ça": {
+          "1": "Eng G Grade 5B",
+          "2": "Eng G Grade 7A",
+          "3": "Eng G Grade 5B",
+          "4": "Eng G Grade 7A"
+        }
+      }
+    },
+    {
+      "teacher": "Muhammed Karasu",
+      "schedule": {
+        "Pa": {
+          "1": "Turkish Grade 5A",
+          "2": "Turkish Grade 7A",
+          "3": "Turkish Grade 8",
+          "4": "Turkish Grade 5B",
+          "5": "Turkish Grade 7B"
+        },
+        "Sa": {
+          "1": "Turkish Grade 5A",
+          "2": "Turkish Grade 4A",
+          "3": "Turkish Grade 4B",
+          "4": "Turkish Gr 9 (Blok)",
+          "5": "Turkish Grade 6A"
+        },
+        "Ça": {
+          "1": "Turkish Grade 7A",
+          "2": "Turkish Grade 6B",
+          "3": "Turkish Grade 8",
+          "4": "Turkish Grade 4A",
+          "5": "Turkish Grade 5B"
+        },
+        "Pe": {
+          "1": "Turkish Grade 7B",
+          "3": "Turkish Gr 9 (Blok)",
+          "4": "Turkish Grade 6A"
+        },
+        "Cu": {
+          "1": "Turkish Grade 4B",
+          "2": "Turkish Grade 6B"
+        }
+      }
+    },
+    {
+      "teacher": "Nigar Sadıqlı",
+      "schedule": {
+        "Pa": {
+          "1": "AzHistory Grade 5A",
+          "2": "Geog Grade 5B",
+          "3": "AzHistory Grade 5B",
+          "4": "Geog Grade 6A",
+          "5": "AzHistory Grade 6B"
+        },
+        "Sa": {
+          "1": "AzHistory Grade 5B",
+          "2": "Geog Grade 5B",
+          "3": "AzHistory Grade 5A",
+          "4": "AzHistory Grade 7A",
+          "5": "Geog Grade 6B"
+        },
+        "Ça": {
+          "3": "AzHistory Gr 9 (Blok)",
+          "4": "AzHistory Grade 8",
+          "5": "Geog Grade 5A"
+        },
+        "Pe": {
+          "1": "AzHistory Grade 6A",
+          "2": "AzHistory Grade 6A",
+          "3": "AzHistory Grade 8",
+          "4": "AzHistory Grade 6B"
+        },
+        "Cu": {
+          "1": "AzHistory Grade 7B",
+          "2": "Geog Grade 6A"
+        }
+      }
+    },
+    {
+      "teacher": "Fəridə Mustafazadə",
+      "schedule": {
+        "Pa": {
+          "1": "RaW Grade 2A",
+          "2": "Eng G Grade 2A",
+          "3": "Math Grade 2A",
+          "4": "Eng G Grade 2A",
+          "5": "Math Grade 2A"
+        },
+        "Sa": {
+          "1": "Math Grade 2A",
+          "2": "Eng G Grade 2A",
+          "3": "Eng G Grade 2A",
+          "4": "Math Grade 2A",
+          "5": "RaW Grade 2A"
+        },
+        "Ça": {
+          "1": "SCulture Grade 2A",
+          "2": "RaW Grade 2A"
+        },
+        "Pe": {
+          "1": "Eng G Grade 2A",
+          "2": "Eng G Grade 2A"
+        }
+      }
+    },
+    {
+      "teacher": "Məmməd Kərimli",
+      "schedule": {
+        "Pa": {
+          "1": "Robotics Grade 5A",
+          "2": "Robotics Grade 5B",
+          "3": "Robotics Grade 6B",
+          "4": "Robotics Grade 7B",
+          "5": "Robotics Grade 6A"
+        },
+        "Sa": {
+          "1": "Computing Grade 7B",
+          "2": "ICT (I) Gr 9",
+          "3": "ICT (I) Gr 9",
+          "4": "Computing Grade 8",
+          "5": "Computing Grade 6A"
+        },
+        "Ça": {
+          "1": "Robotics Grade 8",
+          "2": "Club4 Grade 7A-8",
+          "3": "Computing Grade 5B",
+          "4": "Robotics Grade 7A"
+        },
+        "Pe": {
+          "2": "ICT (I) Gr 9",
+          "3": "Computing Grade 8",
+          "4": "Computing Grade 6B",
+          "5": "Computing Grade 7A"
+        },
+        "Cu": {
+          "1": "Computing Grade 5A",
+          "2": "Computing Grade 6B",
+          "3": "Club3 Grade 5A-6B",
+          "4": "Computing Grade 7A"
+        }
+      }
+    },
+    {
+      "teacher": "Süleyman Əliyev",
+      "schedule": {
+        "Pa": {
+          "1": "PE1 PreS 1",
+          "2": "PE1 Grade 2A",
+          "3": "PE1 Grade 3B",
+          "4": "PE1 Grade 2A",
+          "5": "PE1 Grade 3B"
+        },
+        "Sa": {
+          "2": "Club1 Grade 1A-2B",
+          "3": "PE1 Grade 1B",
+          "4": "PE1 PreS 1",
+          "5": "PE1 PreS2"
+        },
+        "Ça": {
+          "1": "PE1 PreS3",
+          "2": "PE1 Grade 2B",
+          "4": "PE1 PreS3",
+          "5": "PE1 Grade 3A",
+          "6": "PE1 PreS2"
+        },
+        "Pe": {
+          "2": "PE1 Grade 3A",
+          "5": "PE1 Grade 1A",
+          "6": "PE1 Grade 1A"
+        },
+        "Cu": {
+          "2": "PE1 Grade 1B",
+          "4": "PE1 Grade 2B"
+        }
+      }
+    },
+    {
+      "teacher": "Həmid Quliyev",
+      "schedule": {
+        "Pa": {
+          "1": "W History Grade 6A",
+          "2": "W History Grade 7B",
+          "3": "WH(I) Gr 9 (Blok 3&4)",
+          "4": "W History Grade 8"
+        },
+        "Sa": {
+          "2": "W History Grade 7B",
+          "3": "W History Grade 6B",
+          "4": "W History Grade 8",
+          "5": "WH(I) Gr 9 (Blok 3&4)"
+        },
+        "Ça": {
+          "3": "WH(I) Gr 9 (Blok 3&4)",
+          "4": "W History Grade 7A",
+          "5": "W History Grade 7A"
+        }
+      }
+    },
+    {
+      "teacher": "Tamara Cəlilova",
+      "schedule": {
+        "Pa": {
+          "1": "Russian Grade 6A",
+          "2": "Russian Grade 8",
+          "3": "Russian Grade 8",
+          "4": "Russian Grade 6B",
+          "5": "Russian Grade 7B"
+        },
+        "Sa": {
+          "3": "Russian Gr 9 (Blok)",
+          "4": "Russian Grade 7A",
+          "5": "Russian Grade 6A"
+        },
+        "Ça": {
+          "1": "Russian Grade 7A",
+          "2": "Russian Grade 6B",
+          "5": "Russian Grade 7B"
+        },
+        "Pe": {
+          "3": "Russian Gr 9 (Blok)"
+        }
+      }
+    },
+    {
+      "teacher": "Afet Gasimova",
+      "schedule": {
+        "Pa": {
+          "1": "GPersp Grade 6A",
+          "2": "GPersp Grade 7A",
+          "3": "Economics Gr 9",
+          "4": "Economics Gr 9"
+        },
+        "Sa": {
+          "2": "GPersp Grade 7B",
+          "3": "Economics Gr 9",
+          "4": "GPersp Grade 6B",
+          "5": "GPersp Grade 8"
+        }
+      }
+    },
+    {
+      "teacher": "Nigar Xanlar",
+      "schedule": {
+        "Pa": {
+          "1": "Eng G Grade 7B",
+          "2": "Eng G Grade 4B",
+          "3": "EngSL Grade 4B",
+          "4": "Eng G Grade 4B",
+          "5": "Eng G Grade 4B"
+        },
+        "Sa": {
+          "1": "RaW Grade 4B",
+          "2": "Eng G Grade 7B",
+          "3": "EngSL Grade 4B",
+          "4": "RaW Grade 4B",
+          "5": "SCulture Grade 4B"
+        },
+        "Ça": {
+          "1": "Eng G Grade 4B",
+          "2": "Eng G Grade 7B",
+          "3": "EngSL Grade 4B",
+          "4": "Speaking Grade 7A",
+          "5": "Speaking Grade 7B"
+        },
+        "Pe": {
+          "1": "EngSL Grade 4B",
+          "2": "Eng G Grade 4B"
+        }
+      }
+    },
+    {
+      "teacher": "Fatime Mürşüdova",
+      "schedule": {
+        "Pa": {
+          "1": "Math Grade 1A",
+          "2": "Eng G Grade 1A",
+          "3": "MathSL Grade 1A",
+          "4": "RaW Grade 1A",
+          "5": "Math Grade 1A"
+        },
+        "Sa": {
+          "1": "SCulture Grade 1A",
+          "2": "RaW Grade 1A",
+          "3": "EngSL Grade 1A",
+          "4": "Eng G Grade 1A",
+          "5": "Math Grade 1A"
+        },
+        "Ça": {
+          "1": "EngSL Grade 1A",
+          "2": "MathSL Grade 1A",
+          "3": "Eng G Grade 1A"
+        },
+        "Pe": {
+          "1": "Science Grade 1A",
+          "2": "Speaking Grade 1A",
+          "3": "Eng G Grade 1A"
+        },
+        "Cu": {
+          "1": "Math Grade 1A",
+          "2": "Science Grade 1A",
+          "3": "RaW Grade 1A"
+        }
+      }
+    },
+    {
+      "teacher": "Aysel Abdullayeva",
+      "schedule": {
+        "Pa": {
+          "1": "EngSL Grade 3B",
+          "2": "Eng G Grade 6B",
+          "3": "Speaking Grade 3B",
+          "4": "EngSL Grade 3B",
+          "5": "RaW Grade 3B"
+        },
+        "Sa": {
+          "1": "Eng G Grade 6B",
+          "2": "Eng G Grade 6B",
+          "3": "Eng G Grade 3B",
+          "4": "Eng G Grade 6B",
+          "5": "Eng G Grade 3B"
+        },
+        "Ça": {
+          "1": "SCulture Grade 3B",
+          "2": "Speaking Grade 6B",
+          "3": "Eng G Grade 3B",
+          "4": "RaW Grade 3B",
+          "5": "Eng G Grade 3B"
+        },
+        "Pe": {
+          "1": "EngSL Grade 3B",
+          "2": "EngSL Grade 3B",
+          "3": "Eng G Grade 6B",
+          "4": "Eng G Grade 3B"
+        }
+      }
+    },
+    {
+      "teacher": "Lalə İsmayılova",
+      "schedule": {
+        "Pa": {
+          "1": "Eng G Gr 9 (Blok)",
+          "2": "Eng G Gr 9 (Blok)",
+          "3": "EngSL Grade 4A",
+          "4": "RaW Grade 4A",
+          "5": "Eng G Gr 9 (Blok)"
+        },
+        "Sa": {
+          "1": "Eng G Gr 9 (Blok)",
+          "2": "Eng G Grade 4A",
+          "3": "Eng G Grade 4A",
+          "4": "RaW Grade 4A",
+          "5": "Eng G Grade 4A"
+        },
+        "Ça": {
+          "1": "Eng G Grade 4A",
+          "2": "EngSL Grade 4A",
+          "3": "SCulture Grade 4A"
+        },
+        "Pe": {
+          "1": "Eng G Gr 9 (Blok)",
+          "2": "Eng G Grade 4A"
+        }
+      }
+    },
+    {
+      "teacher": "Şehla Əlizadə",
+      "schedule": {
+        "Pa": {
+          "1": "MathSL Grade 1B",
+          "2": "Eng G Grade 1B",
+          "3": "RaW Grade 1B",
+          "4": "Speaking Grade 1B",
+          "5": "Math Grade 1B"
+        },
+        "Sa": {
+          "1": "EngSL Grade 1B",
+          "2": "Math Grade 1B",
+          "3": "SCulture Grade 1B",
+          "4": "Eng G Grade 1B",
+          "5": "Science Grade 1B"
+        },
+        "Ça": {
+          "1": "RaW Grade 1B",
+          "2": "RaW Grade 1B",
+          "3": "EngSL Grade 1B"
+        },
+        "Pe": {
+          "1": "EngSL Grade 1B",
+          "2": "Eng G Grade 1B",
+          "3": "Math Grade 1B"
+        },
+        "Cu": {
+          "1": "Science Grade 1B",
+          "2": "MathSL Grade 1B"
+        }
+      }
+    },
+    {
+      "teacher": "Solmaz Mikayılzadə",
+      "schedule": {
+        "Pa": {
+          "1": "Azerb PreS2",
+          "2": "Azerb Grade 2B",
+          "3": "Azerb Grade 4B",
+          "4": "Azerb PreS2",
+          "5": "Azerb PreS3"
+        },
+        "Sa": {
+          "1": "Azerb Grade 1B",
+          "2": "Azerb Grade 4A",
+          "3": "Azerb Grade 3B",
+          "4": "Azerb Grade 3B",
+          "5": "Azerb PreS 1"
+        },
+        "Ça": {
+          "1": "Azerb Grade 1B",
+          "2": "Azerb Grade 4A",
+          "3": "Azerb Grade 3A",
+          "4": "Club2 Grade 3A-4B",
+          "5": "Azerb PreS3"
+        },
+        "Pe": {
+          "1": "Azerb Grade 1A",
+          "2": "Azerb Grade 2A",
+          "3": "Azerb Grade 2B",
+          "4": "Azerb Grade 4B",
+          "5": "Azerb PreS 1"
+        },
+        "Cu": {
+          "1": "Azerb Grade 1A",
+          "2": "Azerb Grade 2A",
+          "3": "Azerb Grade 3A",
+          "4": "Club3 Grade 5A-6B"
+        }
+      }
+    },
+    {
+      "teacher": "Nurcan Kərimova",
+      "schedule": {
+        "Pa": {
+          "1": "PlayTime PreS 1",
+          "2": "CircleT PreS 1",
+          "3": "MathSL PreS 1",
+          "4": "EngSL PreS 1",
+          "5": "PlayTime PreS 1",
+          "6": "CircleT PreS 1",
+          "7": "Arts PreS 1"
+        },
+        "Sa": {
+          "1": "MathSL PreS 1",
+          "2": "MathSL PreS 1",
+          "3": "PlayTime PreS 1",
+          "4": "CircleT PreS 1",
+          "5": "PlayTime PreS 1"
+        },
+        "Ça": {
+          "1": "CircleT PreS 1",
+          "2": "EngSL PreS 1",
+          "3": "EngSL PreS 1",
+          "4": "PlayTime PreS 1",
+          "5": "CircleT PreS 1",
+          "6": "EngSL PreS 1"
+        }
+      }
+    },
+    {
+      "teacher": "Könül Sadıxova",
+      "schedule": {
+        "Pa": {
+          "1": "Science Grade 2B",
+          "2": "SCulture Grade 7B",
+          "3": "SCulture Grade 7A",
+          "4": "Science Grade 3B",
+          "5": "SCulture Grade 6B"
+        },
+        "Sa": {
+          "1": "Science Grade 2B",
+          "2": "Science Grade 3B",
+          "3": "SCulture Grade 5B",
+          "4": "Science Grade 2A",
+          "5": "Science Grade 3B"
+        },
+        "Ça": {
+          "1": "SCulture Grade 6A",
+          "2": "SCulture Grade 8",
+          "3": "SCulture Gr 9 (Blok)",
+          "4": "Science Grade 3B",
+          "5": "Science Grade 2A"
+        },
+        "Pe": {
+          "1": "Science Grade 2A"
+        }
+      }
+    },
+    {
+      "teacher": "Aysel Piriyeva",
+      "schedule": {
+        "Pa": {
+          "1": "PlayTime PreS2",
+          "2": "CircleT PreS2",
+          "3": "Arts PreS2",
+          "4": "PlayTime PreS2",
+          "5": "CircleT PreS2",
+          "6": "PlayTime PreS2",
+          "7": "CircleT PreS2"
+        },
+        "Sa": {
+          "1": "EngSL PreS2",
+          "2": "MathSL PreS2",
+          "3": "MathSL PreS2",
+          "4": "PlayTime PreS2",
+          "5": "CircleT PreS2",
+          "6": "MathSL PreS2"
+        },
+        "Ça": {
+          "1": "PlayTime PreS2",
+          "2": "CircleT PreS2",
+          "3": "EngSL PreS2",
+          "4": "EngSL PreS2"
+        }
+      }
+    },
+    {
+      "teacher": "Aytən Əmirahova",
+      "schedule": {
+        "Pa": {
+          "1": "PlayTime PreS3",
+          "2": "CircleT PreS3",
+          "3": "Arts PreS3",
+          "4": "MathSL PreS3",
+          "5": "MathSL PreS3",
+          "6": "PlayTime PreS3",
+          "7": "CircleT PreS3"
+        },
+        "Sa": {
+          "1": "EngSL PreS3",
+          "2": "PlayTime PreS3",
+          "3": "CircleT PreS3",
+          "4": "MathSL PreS3",
+          "5": "PlayTime PreS3",
+          "6": "CircleT PreS3",
+          "7": "EngSL PreS3"
+        },
+        "Ça": {
+          "1": "PlayTime PreS3",
+          "2": "CircleT PreS3",
+          "3": "EngSL PreS3"
+        }
+      }
+    },
+    {
+      "teacher": "Mahirə Məhərrəmova",
+      "schedule": {
+        "Pa": {
+          "1": "Math Grade 3A",
+          "2": "Math Grade 4B",
+          "3": "Math Grade 4A",
+          "4": "Math Grade 3B",
+          "5": "Math Grade 4A"
+        },
+        "Sa": {
+          "1": "Math Grade 3A",
+          "2": "Math Grade 3B",
+          "3": "Math Grade 4B",
+          "4": "Math Grade 4B",
+          "5": "Math Grade 3A"
+        },
+        "Ça": {
+          "1": "Math Grade 4B",
+          "2": "Math Grade 4A",
+          "3": "Math Grade 3B",
+          "4": "Math Grade 3B",
+          "5": "Math Grade 4B"
+        },
+        "Pe": {
+          "1": "Math Grade 4A",
+          "2": "Math Grade 3A",
+          "3": "Math Grade 3B",
+          "4": "Math Grade 4B",
+          "5": "Math Grade 4A"
+        }
+      }
+    },
+    {
+      "teacher": "Nuranə Cəfərova",
+      "schedule": {
+        "Pa": {
+          "1": "Arts Grade 6B",
+          "2": "Arts Grade 3B",
+          "3": "Arts Grade 6A",
+          "4": "Club1 Grade 1A-2B",
+          "5": "Arts Grade 3A"
+        },
+        "Sa": {
+          "2": "Club2 Grade 3A-4B",
+          "3": "Club4 Grade 7A-8",
+          "4": "Arts Grade 4B",
+          "5": "Arts Grade 5A"
+        },
+        "Ça": {
+          "3": "Arts Grade 5B",
+          "4": "Club3 Grade 5A-6B",
+          "5": "Arts Grade 4A"
+        }
+      }
+    },
+    {
+      "teacher": "Emilya Seyidova",
+      "schedule": {
+        "Pa": {
+          "1": "GPersp Grade 4A",
+          "2": "Speaking Grade 4A",
+          "3": "EngSL Grade 2A",
+          "4": "EngSL Grade 2A",
+          "5": "GPersp Grade 1A"
+        },
+        "Sa": {
+          "1": "Speaking Grade 4B",
+          "2": "GPersp Grade 1B",
+          "3": "GPersp Grade 2A",
+          "4": "GPersp Grade 5A",
+          "5": "GPersp Grade 5B"
+        },
+        "Ça": {
+          "1": "Speaking Grade 2A",
+          "2": "EngSL Grade 2A",
+          "3": "EngSL Grade 2A",
+          "4": "GPersp Grade 3A",
+          "5": "GPersp Grade 2B"
+        },
+        "Pe": {
+          "1": "GPersp Grade 3B",
+          "2": "GPersp Grade 4B"
+        }
+      }
+    },
+    {
+      "teacher": "Arzu Quliyeva",
+      "schedule": {
+        "Pa": {
+          "1": "Robotics Grade 2A",
+          "2": "Science Grade 3A",
+          "4": "Club1 Grade 1A-2B",
+          "5": "Science Grade 3A",
+          "6": "Robotics Grade 1B"
+        },
+        "Sa": {
+          "1": "Club2 Grade 3A-4B",
+          "2": "Robotics PreS 1",
+          "3": "Robotics PreS2",
+          "4": "Science Grade 3A",
+          "5": "Robotics PreS3"
+        },
+        "Ça": {
+          "1": "Robotics Grade 1A",
+          "2": "Robotics Grade 2B",
+          "3": "Science Grade 3A"
+        }
+      }
+    },
+    {
+      "teacher": "Nigarə Səfərli",
+      "schedule": {
+        "Pa": {
+          "1": "EngSL Grade 1A",
+          "2": "EngSL Grade 1B",
+          "3": "EngSL Grade 1A",
+          "4": "Club2 Grade 3A-4B",
+          "5": "EngSL Grade 1B",
+          "6": "EngSL Grade 1B"
+        }
+      }
+    },
+    {
+      "teacher": "Müjgan Fərruxlu",
+      "schedule": {
+        "Pa": {
+          "1": "Azerb Grade 6A",
+          "2": "Azerb Grade 7A",
+          "3": "Azerb Grade 5B",
+          "4": "Azerb Grade 6B",
+          "5": "Azerb Grade 7B"
+        },
+        "Sa": {
+          "1": "Azerb Gr 9 (Blok)",
+          "2": "Azerb Grade 5A",
+          "3": "Azerb Grade 7A",
+          "4": "Azerb Grade 7B",
+          "5": "Azerb Grade 8"
+        },
+        "Ça": {
+          "1": "Azerb Grade 5A",
+          "2": "Azerb Grade 7B",
+          "3": "Azerb Gr 9 (Blok)",
+          "4": "Azerb Grade 8",
+          "5": "Azerb Grade 7A"
+        },
+        "Pe": {
+          "1": "Azerb Grade 5B",
+          "2": "Azerb Grade 6B",
+          "3": "Azerb Grade 8",
+          "4": "Azerb Grade 6A"
+        },
+        "Cu": {
+          "1": "Azerb Gr 9 (Blok)",
+          "2": "Azerb Gr 9 (Blok)"
+        }
+      }
+    },
+    {
+      "teacher": "Səadət Məmmədli",
+      "schedule": {
+        "Pa": {
+          "1": "Speaking Grade 5A",
+          "2": "RaW Grade 6A",
+          "3": "Eng G Grade 8",
+          "4": "Eng G Grade 8",
+          "5": "Eng G Grade 5A"
+        },
+        "Sa": {
+          "1": "Eng G Grade 5A",
+          "2": "Eng G Grade 5A",
+          "3": "Eng G Grade 8",
+          "4": "EngSL Grade 5A",
+          "5": "RaW Grade 6B"
+        },
+        "Ça": {
+          "1": "Speaking Grade 5B",
+          "2": "SCulture Grade 5A",
+          "3": "Eng G Grade 8",
+          "4": "Eng G Grade 5A",
+          "5": "RaW Grade 5A"
+        },
+        "Pe": {
+          "1": "Eng G Grade 5A",
+          "2": "Eng G Grade 8"
+        }
+      }
+    },
+    {
+      "teacher": "Aysu Mehdizadə",
+      "schedule": {
+        "Pa": {
+          "1": "Phonics PreS2",
+          "2": "Math PreS2",
+          "3": "PlayTime PreS2",
+          "4": "CircleT PreS2",
+          "5": "Phonics PreS2",
+          "6": "Phonics PreS2",
+          "7": "PlayTime PreS2"
+        },
+        "Sa": {
+          "1": "Science PreS2",
+          "2": "CircleT PreS2",
+          "3": "PlayTime PreS2",
+          "4": "Phonics PreS2",
+          "5": "CircleT PreS2",
+          "6": "EngSL PreS2"
+        },
+        "Ça": {
+          "1": "MathSL PreS2",
+          "2": "MathSL PreS2",
+          "3": "PlayTime PreS2",
+          "4": "Phonics PreS2",
+          "5": "CircleT PreS2",
+          "6": "MathSL PreS2"
+        },
+        "Pe": {
+          "1": "PlayTime PreS2",
+          "2": "CircleT PreS2",
+          "3": "Math PreS2",
+          "4": "EngSL PreS2",
+          "5": "EngSL PreS2"
+        },
+        "Cu": {
+          "1": "Math PreS2",
+          "2": "Math PreS2"
+        }
+      }
+    },
+    {
+      "teacher": "Ulker Ahmetova",
+      "schedule": {
+        "Pa": {
+          "1": "Eng G Grade 3A",
+          "2": "Eng G Grade 6A",
+          "3": "Eng G Grade 6A",
+          "4": "Speaking Grade 6A",
+          "5": "Eng G Grade 3A"
+        },
+        "Sa": {
+          "1": "Eng G Grade 3A",
+          "2": "EngSL Grade 3A",
+          "3": "SCulture Grade 3A",
+          "4": "Eng G Grade 6A",
+          "5": "Eng G Grade 6A"
+        },
+        "Ça": {
+          "1": "Eng G Grade 3A",
+          "2": "EngSL Grade 3A",
+          "3": "RaW Grade 3A",
+          "4": "Speaking Grade 3A",
+          "5": "Eng G Grade 6A"
+        },
+        "Pe": {
+          "1": "RaW Grade 3A",
+          "2": "Eng G Grade 3A",
+          "3": "Eng G Grade 3A",
+          "4": "EngSL Grade 3A"
+        },
+        "Cu": {
+          "1": "EngSL Grade 3A",
+          "2": "Eng G Grade 6A"
+        }
+      }
+    }
+  ]
+}
