@@ -204,6 +204,30 @@ body {
   color: var(--danger);
 }
 
+.warning-countdown {
+  margin-top: 6px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 122, 89, 0.45);
+  background: rgba(255, 122, 89, 0.14);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.warning-label {
+  font-size: clamp(14px, 1.6vw, 22px);
+}
+
+.warning-time {
+  font-size: clamp(22px, 2.6vw, 40px);
+  line-height: 1;
+  letter-spacing: 0.8px;
+  color: #ffd9a3;
+  font-variant-numeric: tabular-nums;
+}
+
 .preview {
   margin-top: 12px;
   font-size: clamp(16px, 2vw, 26px);
@@ -449,6 +473,12 @@ body {
   gap: 8px;
 }
 
+.book-reco.featured {
+  background: linear-gradient(145deg, rgba(255, 171, 68, 0.22), rgba(46, 230, 166, 0.14));
+  border: 1px solid rgba(255, 196, 109, 0.55);
+  box-shadow: 0 8px 18px rgba(255, 171, 68, 0.14);
+}
+
 .book-reco-head {
   display: flex;
   justify-content: space-between;
@@ -461,12 +491,22 @@ body {
   font-weight: 700;
 }
 
+.book-reco.featured .book-reco-title {
+  color: #ffe4b1;
+}
+
 .book-reco-age {
   font-size: clamp(11px, 1.2vw, 14px);
   color: #aef2d8;
   border: 1px solid rgba(46, 230, 166, 0.4);
   border-radius: 999px;
   padding: 2px 8px;
+}
+
+.book-reco.featured .book-reco-age {
+  color: #fff1c9;
+  border-color: rgba(255, 226, 162, 0.58);
+  background: rgba(255, 214, 136, 0.18);
 }
 
 .book-cover {
@@ -479,6 +519,10 @@ body {
 .book-name {
   font-size: clamp(16px, 1.8vw, 23px);
   font-weight: 700;
+}
+
+.book-reco.featured .book-name {
+  color: #fff7e3;
 }
 
 .book-author {

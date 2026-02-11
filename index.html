@@ -93,6 +93,7 @@
         refreshMs: 1000, // hər saniyə UI yenilə (countdown üçün)
         rotationMs: 12000, // 10-15 saniyə aralığı
         breakRotateMs: 15000,
+        lessonWarningSeconds: 5 * 60,
         pinnedTimeoutMs: 60000, // 60 saniyə toxunulmasa avtomatik rotation
         dataRefreshMs: 5 * 60 * 1000, // 5 dəqiqə
         dataRetryMs: 30000,
@@ -439,6 +440,13 @@
         if (text === null || text === undefined) return fallback;
         const s = String(text).trim();
         return s.length ? s : fallback;
+      }
+
+      function formatCountdown(totalSeconds) {
+        const safeSeconds = Math.max(0, Math.floor(Number(totalSeconds) || 0));
+        const minutes = Math.floor(safeSeconds / 60);
+        const seconds = safeSeconds % 60;
+        return `${pad2(minutes)}:${pad2(seconds)}`;
       }
 
       function getNowParts() {
@@ -962,6 +970,7 @@
           ageMax: Number(item.age_max || item.ageMax || 16),
           icon: safeText(item.icon || '📘', '📘'),
           cover: safeText(item.cover || item.image || item.image_url || '', ''),
+          badge: safeText(item.badge || item.label || '', ''),
           note: normalizeLangText(item.note || item.desc || '')
         };
       }
@@ -970,7 +979,8 @@
         const out = {
           rotationSeconds: Math.floor(CONFIG.breakRotateMs / 1000),
           items: [],
-          books: []
+          books: [],
+          featuredBook: null
         };
         if (!raw || typeof raw !== 'object') return out;
 
@@ -1003,6 +1013,13 @@
 
         const booksRaw = Array.isArray(raw.books) ? raw.books : [];
         out.books = booksRaw.map(normalizeBookItem).filter(book => book.title);
+
+        const weeklySource = raw.weekly_book || raw.weeklyBook || raw.featured_book || raw.featuredBook;
+        if (weeklySource && typeof weeklySource === 'object') {
+          const featured = normalizeBookItem(weeklySource);
+          if (featured.title) out.featuredBook = featured;
+        }
+
         return out;
       }
 
@@ -1228,6 +1245,56 @@
           cycleIndex: Math.floor(totalSeconds / stepSeconds),
           cycleOffset: totalSeconds % stepSeconds
         };
+      }
+
+      function getSecondsToPeriodStart(context, period) {
+        if (!context || !period || typeof period.startMin !== 'number') return null;
+        const nowTotalSeconds = (context.minutes * 60) + context.now.second;
+        const periodStartSeconds = period.startMin * 60;
+        return Math.max(0, periodStartSeconds - nowTotalSeconds);
+      }
+
+      function getBreakTransitions() {
+        if (!state.schedule || !Array.isArray(state.schedule.periods)) return [];
+        const periods = state.schedule.periods;
+        const transitions = [];
+
+        for (let i = 1; i < periods.length; i += 1) {
+          const previous = periods[i - 1];
+          const next = periods[i];
+          if (next.startMin > previous.endMin) {
+            transitions.push({ previous, next });
+          }
+        }
+
+        return transitions;
+      }
+
+      function isReadingPeriod(period) {
+        const label = safeText(period ? period.label : '', '').toLowerCase();
+        if (!label) return false;
+        return label.includes('okuma')
+          || label.includes('oxu')
+          || label.includes('reading')
+          || label.includes('kitab');
+      }
+
+      function getBookFocusBreakTransition() {
+        const transitions = getBreakTransitions();
+        if (!transitions.length) return null;
+
+        const readingTransitions = transitions.filter(item => isReadingPeriod(item.next));
+        if (readingTransitions.length) {
+          return readingTransitions[readingTransitions.length - 1];
+        }
+
+        return transitions[transitions.length - 1];
+      }
+
+      function isBookFocusBreak(context) {
+        if (!context || !context.isBreak || !context.nextPeriod) return false;
+        const target = getBookFocusBreakTransition();
+        return Boolean(target && target.next && target.next.id === context.nextPeriod.id);
       }
 
       function getBreakItemsFor(mode) {
@@ -1524,32 +1591,56 @@
         return Math.max(7, Math.min(16, grade + 5));
       }
 
-      function getBookRecommendation(context) {
-        if (!state.breakContent || !Array.isArray(state.breakContent.books) || !state.breakContent.books.length) return null;
+      function getBookRecommendation(context, options = {}) {
+        if (!state.breakContent) return null;
+        const featuredBook = state.breakContent.featuredBook;
+        const wantsFeaturedOnly = options && options.featuredOnly === true;
         const targetAge = estimateAgeFromClassId(state.selectedClassId);
+
+        if (wantsFeaturedOnly) {
+          if (!featuredBook || !featuredBook.title) return null;
+          return {
+            book: featuredBook,
+            targetAge,
+            isFeatured: true
+          };
+        }
+
+        if (!Array.isArray(state.breakContent.books) || !state.breakContent.books.length) return null;
+
         const scoped = state.breakContent.books.filter(book => targetAge >= book.ageMin && targetAge <= book.ageMax);
         const books = scoped.length ? scoped : state.breakContent.books;
         const key = (context.now.day * 31) + context.minutes;
         return {
           book: books[key % books.length],
-          targetAge
+          targetAge,
+          isFeatured: false
         };
       }
 
-      function renderBookRecommendation(context) {
-        const selected = getBookRecommendation(context);
+      function renderBookRecommendation(context, options = {}) {
+        const selected = getBookRecommendation(context, options);
         if (!selected || !selected.book) return '';
-        const { book, targetAge } = selected;
+        const { book, targetAge, isFeatured } = selected;
+        const cardTitle = isFeatured
+          ? `${book.icon || '📚'} Həftənin kitabı`
+          : `${book.icon || '📚'} Book Recommendation`;
+        const badgeText = isFeatured
+          ? safeText(book.badge || 'Həftəlik tövsiyə', 'Həftəlik tövsiyə')
+          : `Age ${targetAge}`;
+        const authorText = book.author
+          ? (isFeatured ? `Müəllif: ${book.author}` : `by ${book.author}`)
+          : '';
 
         return `
-          <div class="book-reco">
+          <div class="book-reco ${isFeatured ? 'featured' : ''}">
             <div class="book-reco-head">
-              <div class="book-reco-title">${book.icon || '📚'} Book Recommendation</div>
-              <div class="book-reco-age">Age ${targetAge}</div>
+              <div class="book-reco-title">${cardTitle}</div>
+              <div class="book-reco-age">${badgeText}</div>
             </div>
-            ${book.cover ? `<img class="book-cover" src="${book.cover}" alt="${book.title}" />` : ''}
+            ${book.cover ? `<img class="book-cover" src="${book.cover}" alt="${book.title}" onerror="this.remove()" />` : ''}
             <div class="book-name">${book.title}</div>
-            <div class="book-author">${book.author ? `by ${book.author}` : ''}</div>
+            <div class="book-author">${authorText}</div>
             <div class="book-note">${renderLangLines(book.note)}</div>
           </div>
         `;
@@ -1650,25 +1741,34 @@
 
         if (context.isBreak) {
           const nextPeriod = context.nextPeriod;
-          const minutesToNext = nextPeriod ? Math.max(0, nextPeriod.startMin - context.minutes) : null;
+          const secondsToNext = nextPeriod ? getSecondsToPeriodStart(context, nextPeriod) : null;
           const nextLesson = nextPeriod ? getLesson(dayKey, classId, nextPeriod.id) : null;
-          const warning = minutesToNext !== null && minutesToNext <= 5 && minutesToNext > 0
-            ? `<div class="warning">Dərs başlayır • ${minutesToNext} dəqiqə qaldı</div>`
+          const warning = secondsToNext !== null && secondsToNext > 0 && secondsToNext <= CONFIG.lessonWarningSeconds
+            ? `
+              <div class="warning warning-countdown">
+                <span class="warning-label">Dərs zəngi üçün geri sayım</span>
+                <span class="warning-time">${formatCountdown(secondsToNext)}</span>
+              </div>
+            `
             : '';
+          const focusBookBreak = isBookFocusBreak(context);
 
-          const previewLunch = shouldShowLunchPreview(context)
+          const previewLunch = !focusBookBreak && shouldShowLunchPreview(context)
             ? renderLunchPreview(context)
             : '';
-          const breakCard = renderBreakCard(context, 'break');
-          const bookReco = renderBookRecommendation(context);
+          const breakCard = focusBookBreak ? '' : renderBreakCard(context, 'break');
+          const bookReco = focusBookBreak
+            ? (renderBookRecommendation(context, { featuredOnly: true }) || renderBookRecommendation(context))
+            : '';
+          const breakTitle = focusBookBreak ? 'SON OXU TƏNƏFFÜSÜ' : 'TƏNƏFFÜS';
 
           dom.mainContent.innerHTML = `
-            <div class="state break">TƏNƏFFÜS</div>
+            <div class="state break">${breakTitle}</div>
             ${warning}
             ${buildInfoRow('Növbəti dərs', safeText(nextLesson ? nextLesson.subject : null))}
             ${buildInfoRow('Müəllim', safeText(nextLesson ? nextLesson.teacher : null))}
             ${buildInfoRow('Saat', nextPeriod ? formatPeriodText(nextPeriod) : '—')}
-            ${minutesToNext !== null ? buildInfoRow('Qalıb', `${minutesToNext} dəqiqə`) : ''}
+            ${secondsToNext !== null ? buildInfoRow('Qalıb', formatCountdown(secondsToNext)) : ''}
             ${breakCard}
             ${bookReco}
             ${previewLunch}

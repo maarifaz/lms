@@ -157,6 +157,20 @@
       }
     }
   ],
+  "weekly_book": {
+    "title": "Semadaki Sarlar",
+    "author": "Aytul Akal",
+    "age_min": 7,
+    "age_max": 16,
+    "icon": "📚",
+    "badge": "Heftenin kitabi",
+    "cover": "data/books/samadaki-sarlar.jpg",
+    "note": {
+      "az": "Son kitab oxu teneffusunde heftenin kitabi kimi gosterilsin.",
+      "tr": "Son kitap okuma molasinda haftanin kitabi olarak gosterilsin.",
+      "en": "Show this as the book of the week during the final reading break."
+    }
+  },
   "books": [
     {
       "title": "Charlie and the Chocolate Factory",
