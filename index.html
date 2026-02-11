@@ -80,6 +80,16 @@
     </div>
   </div>
 
+  <div id="book-focus-overlay" class="book-focus-overlay hidden">
+    <div class="book-focus-shell">
+      <div id="book-focus-title" class="book-focus-title">Həftənin kitabı</div>
+      <div id="book-focus-name" class="book-focus-name">—</div>
+      <div id="book-focus-author" class="book-focus-author"></div>
+      <img id="book-focus-image" class="book-focus-image hidden" alt="book cover" onerror="this.classList.add('hidden')" />
+      <div id="book-focus-countdown" class="book-focus-countdown"></div>
+    </div>
+  </div>
+
   <div id="error-banner" class="error-banner hidden">Data yüklənmədi — internet/JSON yoxlayın.</div>
 
   <script>
@@ -137,6 +147,12 @@
         afterSchoolQuizCountdownLabel: document.getElementById('after-school-quiz-countdown-label'),
         afterSchoolQuizTimerFill: document.getElementById('after-school-quiz-timer-fill'),
         afterSchoolQuizCountdown: document.getElementById('after-school-quiz-countdown'),
+        bookFocusOverlay: document.getElementById('book-focus-overlay'),
+        bookFocusTitle: document.getElementById('book-focus-title'),
+        bookFocusName: document.getElementById('book-focus-name'),
+        bookFocusAuthor: document.getElementById('book-focus-author'),
+        bookFocusImage: document.getElementById('book-focus-image'),
+        bookFocusCountdown: document.getElementById('book-focus-countdown'),
         errorBanner: document.getElementById('error-banner')
       };
 
@@ -1894,6 +1910,57 @@
         }
       }
 
+      function renderBookFocusOverlay(context) {
+        const isReadingNow = Boolean(context.currentPeriod && isReadingPeriod(context.currentPeriod));
+        const isReadingBreak = context.isBreak && isBookFocusBreak(context);
+        const isLateLessonNow = Boolean(context.currentPeriod && Number(context.currentPeriod.id) >= 8);
+        const shouldShow = (isReadingNow || isReadingBreak || isLateLessonNow) && !context.isLunch && !context.isAfterSchool;
+        if (!shouldShow) {
+          dom.bookFocusOverlay.classList.add('hidden');
+          dom.bookFocusImage.classList.add('hidden');
+          dom.bookFocusImage.removeAttribute('src');
+          dom.bookFocusTitle.classList.remove('hidden');
+          dom.bookFocusName.classList.remove('hidden');
+          dom.bookFocusAuthor.classList.remove('hidden');
+          dom.bookFocusCountdown.classList.remove('hidden');
+          return;
+        }
+
+        const selected = getBookRecommendation(context, { featuredOnly: true }) || getBookRecommendation(context);
+        if (!selected || !selected.book) {
+          dom.bookFocusOverlay.classList.add('hidden');
+          return;
+        }
+
+        const { book } = selected;
+        const secondsToNext = context.nextPeriod ? getSecondsToPeriodStart(context, context.nextPeriod) : null;
+        const isImageOnlyMode = isReadingNow || isLateLessonNow;
+        dom.bookFocusTitle.textContent = isImageOnlyMode
+          ? `Həftənin kitabı: ${safeText(book.title, '—')}`
+          : safeText(book.badge || 'Həftənin kitabı', 'Həftənin kitabı');
+        dom.bookFocusName.textContent = safeText(book.title, '—');
+        dom.bookFocusAuthor.textContent = book.author ? `Müəllif: ${book.author}` : '';
+        dom.bookFocusCountdown.textContent = secondsToNext !== null
+          ? `${isReadingNow || isLateLessonNow ? 'Dərs sonu' : 'Tənəffüs sonu'}: ${formatCountdown(secondsToNext)}`
+          : '';
+
+        dom.bookFocusTitle.classList.remove('hidden');
+        dom.bookFocusName.classList.toggle('hidden', isImageOnlyMode);
+        dom.bookFocusAuthor.classList.toggle('hidden', isImageOnlyMode);
+        dom.bookFocusCountdown.classList.toggle('hidden', isImageOnlyMode);
+
+        const cover = safeText(book.cover, '');
+        if (cover) {
+          dom.bookFocusImage.src = cover;
+          dom.bookFocusImage.classList.remove('hidden');
+        } else {
+          dom.bookFocusImage.classList.add('hidden');
+          dom.bookFocusImage.removeAttribute('src');
+        }
+
+        dom.bookFocusOverlay.classList.remove('hidden');
+      }
+
       function render() {
         if (!state.schedule || !state.lunch) return;
 
@@ -1907,6 +1974,7 @@
         renderClassList(context);
         renderLunchOverlay(context);
         renderAfterSchoolQuizOverlay(context);
+        renderBookFocusOverlay(context);
         scrollSelectedIntoView();
       }
 
